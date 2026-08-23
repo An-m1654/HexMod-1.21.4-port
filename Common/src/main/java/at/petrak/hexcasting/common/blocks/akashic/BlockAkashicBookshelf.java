@@ -10,7 +10,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,12 +24,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockAkashicBookshelf extends Block implements AkashicFloodfiller, EntityBlock, IForgeLikeBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty HAS_BOOKS = BooleanProperty.create("has_books");
 
     public BlockAkashicBookshelf(Properties p_49795_) {
@@ -41,20 +40,18 @@ public class BlockAkashicBookshelf extends Block implements AkashicFloodfiller, 
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof BlockEntityAkashicBookshelf shelf) {
             if (stack.getItem() instanceof ItemScroll scroll) {
                 if (!level.isClientSide()) {
                     scroll.writeDatum(stack, new PatternIota(shelf.getPattern()));
                 }
                 level.playSound(player, pos, HexSounds.SCROLL_SCRIBBLE, SoundSource.BLOCKS, 1f, 1f);
-                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             }
         }
 
-        return stack.isEmpty() && hand == InteractionHand.MAIN_HAND
-                ? ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -67,7 +64,7 @@ public class BlockAkashicBookshelf extends Block implements AkashicFloodfiller, 
 
                 level.playSound(player, pos, HexSounds.SCROLL_SCRIBBLE, SoundSource.BLOCKS,
                         1f, 0.8f);
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             }
         }
 

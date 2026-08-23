@@ -15,6 +15,7 @@ import at.petrak.hexcasting.api.utils.isMediaItem
 import at.petrak.hexcasting.common.items.magic.ItemPackagedHex
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
@@ -23,7 +24,7 @@ import java.util.function.Supplier
 
 // TODO: How to handle in circles
 class OpMakePackagedSpell(val isValid: Predicate<ItemStack>, val expectedTypeDesc: Supplier<Component>, val cost: Long) : SpellAction {
-    constructor(itemType: ItemPackagedHex, cost: Long) : this({s -> s.`is`(itemType)}, itemType::getDescription, cost) {}
+    constructor(itemType: ItemPackagedHex, cost: Long) : this({s -> s.`is`(itemType)}, itemType::getName, cost) {}
     
     override val argc = 2
     override fun execute(
@@ -85,7 +86,7 @@ class OpMakePackagedSpell(val isValid: Predicate<ItemStack>, val expectedTypeDes
 
                 itemEntity.item = entityStack
                 if (entityStack.isEmpty)
-                    itemEntity.kill()
+                    itemEntity.kill(itemEntity.level() as ServerLevel)
             }
         }
     }

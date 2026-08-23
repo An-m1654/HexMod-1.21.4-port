@@ -13,6 +13,7 @@ import at.petrak.hexcasting.ktxt.*
 import net.minecraft.Util
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.DyeColor
@@ -90,26 +91,28 @@ abstract class Mishap : RuntimeException() {
                 else
                     entity.lastHurt -= amount
             }
-            if (!entity.hurt(source, amount) &&
-                !entity.isInvulnerableTo(source) &&
-                !entity.level().isClientSide &&
-                !entity.isDeadOrDying
-            ) {
+            if (!entity.level().isClientSide) {
+                val serverLevel = entity.level() as ServerLevel
+                if (!entity.hurtServer(serverLevel, source, amount) &&
+                !entity.isInvulnerableTo(serverLevel, source) &&
+                        !entity.isDeadOrDying
+                ) {
 
-                // Ok, if you REALLY don't want to play nice...
-                entity.health = targetHealth
-                entity.markHurt()
+                    // Ok, if you REALLY don't want to play nice...
+                    entity.health = targetHealth
+                    entity.markHurt()
 
-                if (entity.isDeadOrDying) {
-                    if (!entity.checkTotemDeathProtection(source)) {
-                        val sound = entity.deathSoundAccessor
-                        if (sound != null) {
-                            entity.playSound(sound, entity.soundVolumeAccessor, entity.voicePitch)
+                    if (entity.isDeadOrDying) {
+                        if (!entity.checkTotemDeathProtection(source)) {
+                            val sound = entity.deathSoundAccessor
+                            if (sound != null) {
+                                entity.playSound(sound, entity.soundVolumeAccessor, entity.voicePitch)
+                            }
+                            entity.die(source)
                         }
-                        entity.die(source)
+                    } else {
+                        entity.playHurtSound(source)
                     }
-                } else {
-                    entity.playHurtSound(source)
                 }
             }
         }

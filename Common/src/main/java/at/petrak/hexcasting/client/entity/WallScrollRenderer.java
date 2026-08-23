@@ -1,24 +1,30 @@
 package at.petrak.hexcasting.client.entity;
 
+import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.client.render.WorldlyPatternRenderHelpers;
 import at.petrak.hexcasting.common.entities.EntityWallScroll;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.DisplayEntityRenderState;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import org.joml.Matrix4f;
 
 import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
-public class WallScrollRenderer extends EntityRenderer<EntityWallScroll> {
+public class WallScrollRenderer extends EntityRenderer<EntityWallScroll, WallScrollRenderState> {
     private static final ResourceLocation PRISTINE_BG_LARGE = modLoc("textures/entity/scroll_large.png");
     private static final ResourceLocation PRISTINE_BG_MEDIUM = modLoc("textures/entity/scroll_medium.png");
     private static final ResourceLocation PRISTINE_BG_SMOL = modLoc("textures/block/scroll_paper.png");
@@ -32,31 +38,33 @@ public class WallScrollRenderer extends EntityRenderer<EntityWallScroll> {
 
     // I do as the PaintingRenderer guides
     @Override
-    public void render(EntityWallScroll wallScroll, float yaw, float partialTicks, PoseStack ps,
-        MultiBufferSource bufSource, int packedLight) {
+    public WallScrollRenderState createRenderState() {
+        return new WallScrollRenderState();
+    }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    @Override
+    public void render(WallScrollRenderState wallScrollState, PoseStack ps, MultiBufferSource bufSource, int packedLight) {
+        RenderSystem.setShader(CoreShaders.POSITION_TEX);
 
         ps.pushPose();
 
-        ps.mulPose(Axis.YP.rotationDegrees(180f - yaw));
+        ps.mulPose(Axis.YP.rotationDegrees(180f - wallScrollState.entityYRot));
         ps.mulPose(Axis.ZP.rotationDegrees(180f));
 
-        int light = LevelRenderer.getLightColor(wallScroll.level(), wallScroll.getPos());
-
+        int light = LevelRenderer.getLightColor(wallScrollState.level, new BlockPos(Mth.floor(wallScrollState.x), Mth.floor(wallScrollState.y), Mth.floor(wallScrollState.z)));
         {
             ps.pushPose();
             // X is right, Y is down, Z is *in*
             // Our origin will be the lower-left corner of the scroll touching the wall
             // (so it has "negative" thickness)
-            ps.translate(-wallScroll.blockSize / 2f, -wallScroll.blockSize / 2f, 1f / 32f);
+            ps.translate(-wallScrollState.blockSize / 2f, -wallScrollState.blockSize / 2f, 1f / 32f);
 
-            float dx = wallScroll.blockSize, dy = wallScroll.blockSize, dz = -1f / 16f;
+            float dx = wallScrollState.blockSize, dy = wallScrollState.blockSize, dz = -1f / 16f;
             float margin = 1f / 48f;
             var last = ps.last();
             var mat = last.pose();
 
-            RenderType layer = RenderType.entityCutout(this.getTextureLocation(wallScroll));
+            RenderType layer = RenderType.entityCutout(this.getTextureLocation(wallScrollState));
 
             var verts = bufSource.getBuffer(layer);
             // Remember: CCW
@@ -93,28 +101,28 @@ public class WallScrollRenderer extends EntityRenderer<EntityWallScroll> {
 
             ps.popPose();
 
-            if(wallScroll.pattern != null)
-                WorldlyPatternRenderHelpers.renderPatternForScroll(wallScroll.pattern, wallScroll, ps, bufSource, light, wallScroll.blockSize, wallScroll.getShowsStrokeOrder());
+            if(wallScrollState.pattern != null)
+                WorldlyPatternRenderHelpers.renderPatternForScroll(wallScrollState.pattern, wallScrollState, ps, bufSource, light, wallScrollState.blockSize, wallScrollState.getShowsStrokeOrder());
         }
 
         ps.popPose();
-        super.render(wallScroll, yaw, partialTicks, ps, bufSource, packedLight);
+        super.render(wallScrollState, ps, bufSource, packedLight);
     }
 
-    @Override
-    public ResourceLocation getTextureLocation(EntityWallScroll wallScroll) {
-        if (wallScroll.isAncient) {
-            if (wallScroll.blockSize <= 1) {
+    // I do as the PaintingRenderer guides
+    public ResourceLocation getTextureLocation(WallScrollRenderState wallScrollState) {
+        if (wallScrollState.isAncient) {
+            if (wallScrollState.blockSize <= 1) {
                 return ANCIENT_BG_SMOL;
-            } else if (wallScroll.blockSize == 2) {
+            } else if (wallScrollState.blockSize == 2) {
                 return ANCIENT_BG_MEDIUM;
             } else {
                 return ANCIENT_BG_LARGE;
             }
         } else {
-            if (wallScroll.blockSize <= 1) {
+            if (wallScrollState.blockSize <= 1) {
                 return PRISTINE_BG_SMOL;
-            } else if (wallScroll.blockSize == 2) {
+            } else if (wallScrollState.blockSize == 2) {
                 return PRISTINE_BG_MEDIUM;
             } else {
                 return PRISTINE_BG_LARGE;
@@ -131,5 +139,19 @@ public class WallScrollRenderer extends EntityRenderer<EntityWallScroll> {
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
                 .setNormal(last, nx, ny, nz);
+    }
+
+    @Override
+    public void extractRenderState(EntityWallScroll entity, WallScrollRenderState entityRenderState, float f) {
+        super.extractRenderState(entity, entityRenderState, f);
+        entityRenderState.pattern = entity.pattern;
+        entityRenderState.showStrokeOrder = entity.getShowsStrokeOrder();
+        entityRenderState.isAncient = entity.isAncient;
+        entityRenderState.entityYRot = entity.getYRot();
+        entityRenderState.x = entity.getX();
+        entityRenderState.y = entity.getY();
+        entityRenderState.z = entity.getZ();
+        entityRenderState.blockSize = entity.blockSize;
+        entityRenderState.level = entity.level();
     }
 }

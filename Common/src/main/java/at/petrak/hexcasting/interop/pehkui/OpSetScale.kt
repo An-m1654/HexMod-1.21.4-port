@@ -1,5 +1,6 @@
 package at.petrak.hexcasting.interop.pehkui
 
+import at.petrak.hexcasting.api.HexAPI.modLoc
 import at.petrak.hexcasting.api.casting.ParticleSpray
 import at.petrak.hexcasting.api.casting.RenderedSpell
 import at.petrak.hexcasting.api.casting.castables.SpellAction
@@ -9,6 +10,9 @@ import at.petrak.hexcasting.api.casting.getEntity
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.player.Player
 
 object OpSetScale : SpellAction {
     override val argc = 2
@@ -30,7 +34,14 @@ object OpSetScale : SpellAction {
 
     private data class Spell(val target: Entity, val scale: Double) : RenderedSpell {
         override fun cast(env: CastingEnvironment) {
-            IXplatAbstractions.INSTANCE.pehkuiApi.setScale(target, scale.toFloat())
+            (target as Player).getAttribute(Attributes.SCALE)?.addOrReplacePermanentModifier(
+                AttributeModifier(
+                    modLoc("scale"),
+                    scale - 1,
+                    AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                )
+            )
+//            IXplatAbstractions.INSTANCE.pehkuiApi.setScale(target, scale.toFloat())
         }
     }
 }

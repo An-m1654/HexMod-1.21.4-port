@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +46,7 @@ public class FarmersDelightCuttingRecipeBuilder implements RecipeBuilder {
     }
 
     public FarmersDelightCuttingRecipeBuilder withInput(ItemStack stack) {
-        return withInput(Ingredient.of(stack));
+        return withInput(Ingredient.of(stack.getItem()));
     }
 
     public FarmersDelightCuttingRecipeBuilder withInput(Ingredient ingredient) {
@@ -101,7 +103,7 @@ public class FarmersDelightCuttingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> key) {
 
     }
 }

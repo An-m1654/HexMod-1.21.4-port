@@ -8,10 +8,12 @@ import at.petrak.hexcasting.common.loot.HexLootHandler;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import at.petrak.paucal.api.datagen.PaucalLootTableSubProvider;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
@@ -45,6 +47,7 @@ public class HexLootTables extends PaucalLootTableSubProvider {
     @Override
     protected void makeLootTables(Map<Block, LootTable.Builder> blockTables,
         Map<ResourceKey<LootTable>, LootTable.Builder> lootTables) {
+        HolderGetter<Item> items = registries.lookupOrThrow(Registries.ITEM);
         dropSelf(blockTables, HexBlocks.IMPETUS_EMPTY,
             HexBlocks.IMPETUS_RIGHTCLICK, HexBlocks.IMPETUS_LOOK, HexBlocks.IMPETUS_REDSTONE,
             HexBlocks.EMPTY_DIRECTRIX, HexBlocks.DIRECTRIX_REDSTONE, HexBlocks.DIRECTRIX_BOOLEAN,
@@ -64,12 +67,13 @@ public class HexLootTables extends PaucalLootTableSubProvider {
             HexBlocks.EDIFIED_BUTTON);
 
         HolderLookup.RegistryLookup<Enchantment> enchRegistryLookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
+        HolderLookup.RegistryLookup<Item> itemRegistryLookup = this.registries.lookupOrThrow(Registries.ITEM);
 
         makeSlabTable(blockTables, HexBlocks.EDIFIED_SLAB);
 
-        makeLeafTable(blockTables, HexBlocks.AMETHYST_EDIFIED_LEAVES, enchRegistryLookup);
-        makeLeafTable(blockTables, HexBlocks.AVENTURINE_EDIFIED_LEAVES, enchRegistryLookup);
-        makeLeafTable(blockTables, HexBlocks.CITRINE_EDIFIED_LEAVES, enchRegistryLookup);
+        makeLeafTable(blockTables, HexBlocks.AMETHYST_EDIFIED_LEAVES, enchRegistryLookup, itemRegistryLookup);
+        makeLeafTable(blockTables, HexBlocks.AVENTURINE_EDIFIED_LEAVES, enchRegistryLookup, itemRegistryLookup);
+        makeLeafTable(blockTables, HexBlocks.CITRINE_EDIFIED_LEAVES, enchRegistryLookup, itemRegistryLookup);
 
         var slatePool = LootPool.lootPool()
             .setRolls(ConstantValue.exactly(1))
@@ -94,7 +98,7 @@ public class HexLootTables extends PaucalLootTableSubProvider {
             ));
         var noSilkTouchCond = silkTouchCond.invert();
         var goodAtAmethystingCond = MatchTool.toolMatches(
-            ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES)
+            ItemPredicate.Builder.item().of(items, ItemTags.CLUSTER_MAX_HARVESTABLES)
         );
 
         var dustPoolWhenGood = LootPool.lootPool()
@@ -144,10 +148,10 @@ public class HexLootTables extends PaucalLootTableSubProvider {
         blockTables.put(HexBlocks.QUENCHED_ALLAY, LootTable.lootTable().withPool(quenchedPool));
     }
 
-    private void makeLeafTable(Map<Block, LootTable.Builder> lootTables, Block block, HolderLookup.RegistryLookup<Enchantment> enchRegistryLookup) {
+    private void makeLeafTable(Map<Block, LootTable.Builder> lootTables, Block block, HolderLookup.RegistryLookup<Enchantment> enchRegistryLookup, HolderLookup.RegistryLookup<Item> itemRegistryLookup) {
         var leafPool = dropThisPool(block, 1)
             .when(AnyOfCondition.anyOf(
-                IXplatAbstractions.INSTANCE.isShearsCondition(),
+                IXplatAbstractions.INSTANCE.isShearsCondition(itemRegistryLookup),
                 MatchTool.toolMatches(ItemPredicate.Builder.item()
                         .withSubPredicate(
                                 ItemSubPredicates.ENCHANTMENTS,

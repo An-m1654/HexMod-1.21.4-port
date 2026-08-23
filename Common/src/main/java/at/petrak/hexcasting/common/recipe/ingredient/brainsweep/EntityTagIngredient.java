@@ -87,7 +87,7 @@ public class EntityTagIngredient extends BrainsweepeeIngredient {
     }
 
     public List<Entity> exampleEntities(Level level) {
-        var someEntityTysHolder = BuiltInRegistries.ENTITY_TYPE.getTag(this.entityTypeTag);
+        var someEntityTysHolder = BuiltInRegistries.ENTITY_TYPE.get(this.entityTypeTag);
         if (someEntityTysHolder.isEmpty()) return List.of();
         var someEntityTys = someEntityTysHolder.get();
 

@@ -20,6 +20,7 @@ import at.petrak.hexcasting.interop.inline.InlinePatternData;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static at.petrak.hexcasting.api.utils.HexUtils.isOfTag;
@@ -102,7 +104,12 @@ public class PatternIota extends Iota {
                     HexTags.Actions.REQUIRES_ENLIGHTENMENT);
 
                 castedName = () -> HexAPI.instance().getActionI18n(key, reqsEnlightenment);
-                action = Objects.requireNonNull(IXplatAbstractions.INSTANCE.getActionRegistry().get(key)).action();
+                Optional<Holder.Reference<ActionRegistryEntry>> actionReference = Objects.requireNonNull(IXplatAbstractions.INSTANCE.getActionRegistry().get(key));
+                if (actionReference.isPresent()) {
+                    action = actionReference.get().value().action();
+                } else {
+                    throw new RuntimeException("Action is null!!!!!!! IN Common/src/main/java/at/petrak/hexcasting/api/casting/iota/PatternIota.java:111");
+                }
 
                 if (reqsEnlightenment && !vm.getEnv().isEnlightened()) {
                     // this gets caught down below

@@ -14,15 +14,17 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 // God I am a horrible person
 public record BrainsweepRecipe(
@@ -36,12 +38,22 @@ public record BrainsweepRecipe(
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<? extends Recipe<RecipeInput>> getType() {
 		return HexRecipeStuffRegistry.BRAINSWEEP_TYPE;
 	}
 
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+    @Override
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.create(Ingredient.of(Items.STONE));
+    }
+
+    @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+	public RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
 		return HexRecipeStuffRegistry.BRAINSWEEP;
 	}
 
@@ -57,15 +69,13 @@ public record BrainsweepRecipe(
 		return ItemStack.EMPTY;
 	}
 
+/*
     @Override
-	public boolean canCraftInDimensions(int pWidth, int pHeight) {
-		return false;
-	}
-
-	@Override
-	public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
 		return ItemStack.EMPTY.copy();
 	}
+
+ */
 
 	// Because kotlin doesn't like doing raw, unchecked types
 	// Can't blame it, but that's what we need to do

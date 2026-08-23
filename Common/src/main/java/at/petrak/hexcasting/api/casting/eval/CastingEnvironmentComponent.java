@@ -32,12 +32,12 @@ public interface CastingEnvironmentComponent {
         long onExtractMedia(long cost, boolean simulate);
 
         /**
-         *  ExtractMedia component that extracts media BEFORE the call to {@link CastingEnvironment#extractMediaEnvironment(long, boolean)}
+         *  ExtractMedia component that extracts media BEFORE the call to {@link CastingEnvironment#extractMediaEnvironment(net.minecraft.server.level.ServerLevel, long, boolean)}
          */
         interface Pre extends ExtractMedia {}
 
         /**
-         *  ExtractMedia component that extracts media AFTER the call to {@link CastingEnvironment#extractMediaEnvironment(long, boolean)}
+         *  ExtractMedia component that extracts media AFTER the call to {@link CastingEnvironment#extractMediaEnvironment(net.minecraft.server.level.ServerLevel, long, boolean)}
          *  if the input is &lt;= 0 you should also probably return 0 (since media cost was already paid off)
          */
         interface Post extends ExtractMedia {}

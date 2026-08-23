@@ -6,6 +6,7 @@ import at.petrak.hexcasting.api.casting.eval.ResolvedPatternType
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.pigment.FrozenPigment
 import at.petrak.hexcasting.api.utils.asTranslatedComponent
+import com.mojang.logging.LogUtils
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -19,7 +20,11 @@ class MishapUnenlightened : Mishap() {
 
     override fun execute(env: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
         env.mishapEnvironment.dropHeldItems()
-        env.castingEntity?.sendSystemMessage("hexcasting.message.cant_great_spell".asTranslatedComponent)
+        if (env.castingEntity is ServerPlayer) {
+            (env.castingEntity as ServerPlayer).sendSystemMessage("hexcasting.message.cant_great_spell".asTranslatedComponent)
+        } else {
+            LogUtils.getLogger().warn("CastingEntity is NOT a serverPlayer!!! Common/src/main/java/at/petrak/hexcasting/api/casting/mishaps/MishapUnenlightened.kt:26")
+        }
 
         // add some non-zero level of juice I guess
         val pos = env.mishapSprayPos()

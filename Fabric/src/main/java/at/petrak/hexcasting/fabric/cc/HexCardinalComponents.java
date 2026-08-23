@@ -47,7 +47,7 @@ public class HexCardinalComponents implements EntityComponentInitializer, ItemCo
 
     public static final ComponentKey<CCPigment> PIGMENT = ComponentRegistry.getOrCreate(modLoc("pigment"),
         CCPigment.class);
-    public static final ComponentKey<CCIotaHolder> IOTA_HOLDER = ComponentRegistry.getOrCreate(modLoc("iota_holder"),
+    public static final ComponentKey<CCIotaHolder> IOTA_HOLDER = ComponentRegistry.getOrCreate(modLoc(  "iota_holder"),
         CCIotaHolder.class);
     public static final ComponentKey<CCMediaHolder> MEDIA_HOLDER = ComponentRegistry.getOrCreate(modLoc("media_holder"),
         CCMediaHolder.class);

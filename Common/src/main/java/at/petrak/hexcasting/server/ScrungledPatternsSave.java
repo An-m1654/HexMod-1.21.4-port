@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.mod.HexTags;
 import at.petrak.hexcasting.api.utils.HexUtils;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -104,9 +105,9 @@ public class ScrungledPatternsSave extends SavedData {
         // I'm going to file that under "don't do that"
         // (the number literal phial incident won't happen though because we check for special handlers first now)
         for (var key : registry.registryKeySet()) {
-            var entry = registry.get(key);
+            var entry = registry.getOrThrow(key);
             if (HexUtils.isOfTag(registry, key, HexTags.Actions.PER_WORLD_PATTERN)) {
-                var scrungledPat = EulerPathFinder.findAltDrawing(entry.prototype(), seed);
+                var scrungledPat = EulerPathFinder.findAltDrawing(entry.value().prototype(), seed);
                 map.put(scrungledPat.anglesSignature(), new PerWorldEntry(key, scrungledPat.getStartDir()));
             }
         }

@@ -1,9 +1,13 @@
 architectury {
-    common(["fabric", "neoforge"])
+    common(["fabric", /*"neoforge"*/])
 }
 
 loom {
     accessWidenerPath = file("src/main/resources/hexplat.accesswidener")
+}
+
+shadowJar {
+    zip64 = true
 }
 
 repositories {
@@ -24,8 +28,7 @@ repositories {
     }
 
     maven { url "https://maven.shedaniel.me/" }
-    // accessories
-    maven { url 'https://maven.wispforest.io/releases' }
+
     // EMI
     maven { url = "https://maven.terraformersmc.com/releases/" }
 }
@@ -39,12 +42,13 @@ dependencies {
 
     modCompileOnly "libs:paucal:$paucalVersion+$minecraftVersion-common"
     // i do not know why the xplat and mod jars are in different coordinates
-    modCompileOnly "vazkii.patchouli:Patchouli-xplat:1.21-$patchouliVersion-SNAPSHOT"
-    modCompileOnly "com.samsthenerd.inline:inline-common:1.21.1-1.2.2-74"
+    modCompileOnly "libs:Patchouli-xplat:1.21.4-$patchouliVersion-SNAPSHOT-dev"
+    modCompileOnly "libs:inline-common:1.21.4-1.2.2"
+    modRuntimeOnly "me.zeroeightsix:fiber:${project.fiber_version}"
 
     // === OPTIONAL DEPS ===
-    modCompileOnly "dev.emi:emi-xplat-intermediary:${emiVersion}:api"
-    modCompileOnly "io.wispforest:accessories-common:$accessoriesVersion"
+//    modCompileOnly "dev.emi:emi-xplat-intermediary:${emiVersion}:api"
+
 
     // === OTHER STUFF ===
     compileOnly "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
@@ -52,6 +56,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+    testImplementation 'org.junit.platform:junit-platform-launcher:6.1.1'
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
 }

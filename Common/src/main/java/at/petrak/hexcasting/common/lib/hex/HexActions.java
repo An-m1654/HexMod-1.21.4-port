@@ -281,7 +281,7 @@ public class HexActions {
 
     public static final ActionRegistryEntry CRAFT$CYPHER = make("craft/cypher", new ActionRegistryEntry(
         HexPattern.fromAngles("waqqqqq", HexDir.EAST), 
-        new OpMakePackagedSpell(s -> (s.is(HexItems.CYPHER)||s.is(HexItems.ANCIENT_CYPHER)), HexItems.CYPHER::getDescription, MediaConstants.CRYSTAL_UNIT)
+        new OpMakePackagedSpell(s -> (s.is(HexItems.CYPHER)||s.is(HexItems.ANCIENT_CYPHER)), HexItems.CYPHER::getName, MediaConstants.CRYSTAL_UNIT)
     ));
     public static final ActionRegistryEntry CRAFT$TRINKET = make("craft/trinket", new ActionRegistryEntry(
         HexPattern.fromAngles("wwaqqqqqeaqeaeqqqeaeq", HexDir.EAST), 
@@ -580,12 +580,12 @@ public class HexActions {
 
     // Xplat interops
     static {
-        if (PehkuiInterop.isActive()) {
+//        if (PehkuiInterop.isActive()) {
             make("interop/pehkui/get",
                 new ActionRegistryEntry(HexPattern.fromAngles("aawawwawwa", HexDir.NORTH_WEST), OpGetScale.INSTANCE));
             make("interop/pehkui/set",
                 new ActionRegistryEntry(HexPattern.fromAngles("ddwdwwdwwd", HexDir.NORTH_EAST), OpSetScale.INSTANCE));
-        }
+//        }
     }
 
     public static ActionRegistryEntry make(String name, ActionRegistryEntry are) {

@@ -9,9 +9,14 @@ import at.petrak.hexcasting.client.render.screenCol
 import at.petrak.hexcasting.xplat.IClientXplatAbstractions
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.logging.LogUtils
 import com.mojang.math.Axis
+import net.minecraft.client.renderer.CompiledShaderProgram
+import net.minecraft.client.renderer.CoreShaders
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.ShaderProgram
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec2
 import kotlin.math.abs
@@ -30,6 +35,9 @@ fun renderCastingStack(ps: PoseStack, player: Player, pticks: Float) {
         val lifetimeOffset = if (lifetime <= 5f) (5f - lifetime) / 5f else 0f
 
         ps.pushPose()
+        ps.mulPose(Axis.XP.rotationDegrees(180f))
+        ps.translate(0f, -player.eyeHeight, 0f)
+        ps.mulPose(Axis.YP.rotationDegrees(player.yBodyRot))
         ps.mulPose(Axis.YP.rotationDegrees(((player.level().gameTime + pticks) * (sin(k * 12.543565f) * 3.4f) * (k / 12.43f) % 360 + (1 + k) * 45f)))
         ps.translate(0.0, 1 + sin(k.toDouble()) * 0.75, 0.75 + cos((k / 8.0)) * 0.25 + cos((player.level().gameTime + pticks) / (7 + k / 4)) * 0.065)
         ps.scale(1 / 24f * (1 - lifetimeOffset), 1 / 24f * (1 - lifetimeOffset), 1 / 24f * (1 - lifetimeOffset))
@@ -37,7 +45,7 @@ fun renderCastingStack(ps: PoseStack, player: Player, pticks: Float) {
         ps.translate(0.0, sin((player.level().gameTime + pticks) / (7.0 + k / 8.0)), 0.0)
 
         val oldShader = RenderSystem.getShader()
-        RenderSystem.setShader { GameRenderer.getPositionColorShader() }
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR)
         RenderSystem.enableDepthTest()
         RenderSystem.disableCull()
         val com1 = pattern.getCenter(1f)
@@ -80,7 +88,12 @@ fun renderCastingStack(ps: PoseStack, player: Player, pticks: Float) {
         drawLineSeq(ps.last().pose(), zappy, 0.35f, 0f, newARGB, newARGB)
         drawLineSeq(ps.last().pose(), zappy, 0.14f, 0.01f, inner, inner)
         ps.popPose()
-        RenderSystem.setShader { oldShader }
+        if (oldShader != null) {
+            RenderSystem.setShader(oldShader)
+        } else {
+            LogUtils.getLogger().warn("oldShader is null!!! Common/src/main/java/at/petrak/hexcasting/api/client/ClientRenderHelper.kt:91")
+        }
+
         RenderSystem.enableCull()
     }
 }

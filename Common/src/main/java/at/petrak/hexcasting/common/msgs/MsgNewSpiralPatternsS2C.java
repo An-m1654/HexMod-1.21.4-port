@@ -40,7 +40,6 @@ public record MsgNewSpiralPatternsS2C(UUID playerUUID, List<HexPattern> patterns
                 assert mc.level != null;
                 var player = mc.level.getPlayerByUUID(self.playerUUID);
                 var stack = IClientXplatAbstractions.INSTANCE.getClientCastingStack(player);
-
                 for (var pattern : self.patterns)
                     stack.addPattern(pattern, self.lifetime);
             });

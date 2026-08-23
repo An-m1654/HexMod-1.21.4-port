@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
@@ -19,4 +20,5 @@ pluginManagement {
 }
 
 rootProject.name = 'Hex Casting'
-include("Common", "Fabric", "Neoforge")
+include("Common", "Fabric")
+//include("Common", "Fabric", "Neoforge")

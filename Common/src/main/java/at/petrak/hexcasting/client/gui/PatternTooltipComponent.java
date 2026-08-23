@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public class PatternTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int mouseX, int mouseY, GuiGraphics graphics) {
+    public void renderImage(Font font, int mouseX, int mouseY, int width, int height, GuiGraphics graphics) {
         var ps = graphics.pose();
 
         // far as i can tell "mouseX" and "mouseY" are actually the positions of the corner of the tooltip
@@ -68,13 +69,22 @@ public class PatternTooltipComponent implements ClientTooltipComponent {
     }
 
     private static void renderBG(GuiGraphics graphics, ResourceLocation background) {
+//        graphics.blit(
+//            background, // texture
+//            0, 0, // x, y
+//            (int) RENDER_SIZE, (int) RENDER_SIZE, // renderWidth, renderHeight
+//            0f, 0f, // u, v (textureCoords)
+//            TEXTURE_SIZE, TEXTURE_SIZE, // regionWidth, regionHeight (texture sample dimensions)
+//            TEXTURE_SIZE, TEXTURE_SIZE); // textureWidth, textureHeight (total dimensions of texture)
         graphics.blit(
-            background, // texture
-            0, 0, // x, y
-            (int) RENDER_SIZE, (int) RENDER_SIZE, // renderWidth, renderHeight
-            0f, 0f, // u, v (textureCoords)
-            TEXTURE_SIZE, TEXTURE_SIZE, // regionWidth, regionHeight (texture sample dimensions)
-            TEXTURE_SIZE, TEXTURE_SIZE); // textureWidth, textureHeight (total dimensions of texture)
+                RenderType::guiTextured,
+                background, // texture
+                0, 0, // x, y
+                0f, 0f, // u, v (textureCoords)
+                (int) RENDER_SIZE, (int) RENDER_SIZE, // renderWidth, renderHeight
+                TEXTURE_SIZE, TEXTURE_SIZE, // regionWidth, regionHeight (texture sample dimensions)
+                TEXTURE_SIZE, TEXTURE_SIZE // textureWidth, textureHeight (total dimensions of texture)
+        );
     }
 
     @Override
@@ -83,7 +93,7 @@ public class PatternTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Font font) {
         return (int) RENDER_SIZE;
     }
 }

@@ -28,6 +28,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.CoreShaders
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.resources.sounds.SoundInstance
@@ -303,19 +304,18 @@ class GuiSpellcasting constructor(
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
         super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
 
-        val mouseHandler = Minecraft.getInstance().mouseHandler
-
-        if (mouseHandler.accumulatedScroll != 0.0 && sign(scrollY) != sign(mouseHandler.accumulatedScroll)) {
-            mouseHandler.accumulatedScroll = 0.0
+        val scrollWheelHandler = Minecraft.getInstance().mouseHandler.scrollWheelHandler
+        if (scrollWheelHandler.accumulatedScroll != 0.0 && sign(scrollY) != sign(scrollWheelHandler.accumulatedScroll)) {
+            scrollWheelHandler.accumulatedScroll = 0.0
         }
 
-        mouseHandler.accumulatedScroll += scrollY
-        val accumulation: Int = mouseHandler.accumulatedScroll.toInt()
+        scrollWheelHandler.accumulatedScroll += scrollY
+        val accumulation: Int = scrollWheelHandler.accumulatedScroll.toInt()
         if (accumulation == 0) {
             return true
         }
 
-        mouseHandler.accumulatedScroll -= accumulation.toDouble()
+        scrollWheelHandler.accumulatedScroll -= accumulation.toDouble()
 
         ShiftScrollListener.onScroll(scrollY, false)
 
@@ -362,7 +362,7 @@ class GuiSpellcasting constructor(
 
         val mat = ps.last().pose()
         val prevShader = RenderSystem.getShader()
-        RenderSystem.setShader(GameRenderer::getPositionColorShader)
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR)
         RenderSystem.disableDepthTest()
         RenderSystem.disableCull()
 
@@ -455,7 +455,7 @@ class GuiSpellcasting constructor(
 
 //        if (this.parenCount > 0) {
 //            val boxHeight = (this.parenDescs.size + 1f) * 10f
-//            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+//            RenderSystem.setShader(CoreShaders.POSITION_COLOR)
 //            RenderSystem.defaultBlendFunc()
 //            drawBox(ps, 0f, 0f, (this.width * LHS_IOTAS_ALLOCATION + 5).toFloat(), boxHeight, 7.5f)
 //            ps.translate(0.0, 0.0, 1.0)
@@ -473,11 +473,11 @@ class GuiSpellcasting constructor(
 
         if (this.stackDescs.isNotEmpty()) {
             val boxHeight = (this.stackDescs.size + 1f) * 10f
-            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+            RenderSystem.setShader(CoreShaders.POSITION_COLOR)
             RenderSystem.enableBlend()
             drawBox(ps, 0f, 0f, (this.width * LHS_IOTAS_ALLOCATION + 5).toFloat(), boxHeight)
             ps.translate(0.0, 0.0, 1.0)
-            RenderSystem.setShader { prevShader }
+            RenderSystem.setShader(prevShader)
             for (desc in this.stackDescs) {
                 graphics.drawString(font, desc, 5, 7, -1) // TODO: Confirm this works
                 ps.translate(0.0, 10.0, 0.0)
@@ -491,7 +491,7 @@ class GuiSpellcasting constructor(
             val boxHeight = 15f
             val addlScale = 1.5f
             ps.translate(this.width * (1.0 - RHS_IOTAS_ALLOCATION * addlScale) - 10, 10.0, 0.0)
-            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+            RenderSystem.setShader(CoreShaders.POSITION_COLOR)
             RenderSystem.enableBlend()
             drawBox(
                 ps, 0f, 0f,
@@ -504,12 +504,12 @@ class GuiSpellcasting constructor(
             val opacity = (Mth.map(sin(time), -1f, 1f, 150f, 255f)).toInt()
             val color = 0x00_ffffff or (opacity shl 24)
 
-            RenderSystem.setShader { prevShader }
+            RenderSystem.setShader(prevShader)
             graphics.drawString(font, kotlinBad, 0, 0, color) // TODO: Confirm this works
             ps.popPose()
         }
 
-        RenderSystem.setShader { prevShader }
+        RenderSystem.setShader(prevShader)
     }
 
     // why the hell is this default true
@@ -549,7 +549,7 @@ class GuiSpellcasting constructor(
         const val RHS_IOTAS_ALLOCATION = 0.15
 
         fun drawBox(ps: PoseStack, x: Float, y: Float, w: Float, h: Float, leftMargin: Float = 2.5f) {
-            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+            RenderSystem.setShader(CoreShaders.POSITION_COLOR)
             RenderSystem.enableBlend()
             renderQuad(ps, x, y, w, h, 0x50_303030)
             renderQuad(ps, x + leftMargin, y + 2.5f, w - leftMargin - 2.5f, h - 5f, 0x50_303030)

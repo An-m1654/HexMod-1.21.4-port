@@ -110,7 +110,7 @@ public class CircleCastEnv extends CastingEnvironment {
     }
 
     @Override
-    public long extractMediaEnvironment(long cost, boolean simulate) {
+    public long extractMediaEnvironment(ServerLevel level, long cost, boolean simulate) {
         var entity = this.getImpetus();
         if (entity == null)
             return cost;

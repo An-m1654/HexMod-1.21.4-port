@@ -20,6 +20,7 @@ import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
@@ -143,7 +144,7 @@ public abstract class PlayerBasedCastEnv extends CastingEnvironment {
     /**
      * Search the player's inventory for media ADs and use them.
      */
-    protected long extractMediaFromInventory(long costLeft, boolean allowOvercast, boolean simulate) {
+    protected long extractMediaFromInventory(ServerLevel level, long costLeft, boolean allowOvercast, boolean simulate) {
         List<ADMediaHolder> sources = MediaHelper.scanPlayerForMediaStuff(this.caster);
 
         var startCost = costLeft;
@@ -161,7 +162,7 @@ public abstract class PlayerBasedCastEnv extends CastingEnvironment {
             double healthToRemove = Math.max(costLeft / mediaToHealth, 0.5);
             if (simulate) {
                 long simulatedRemovedMedia = Mth.ceil(Math.min(this.caster.getHealth(), healthToRemove) * mediaToHealth);
-                if (this.caster.isInvulnerableTo(this.caster.damageSources().source(HexDamageTypes.OVERCAST))) {
+                if (this.caster.isInvulnerableTo(level, this.caster.damageSources().source(HexDamageTypes.OVERCAST))) {
                     simulatedRemovedMedia = 0;
                 }
                 costLeft -= simulatedRemovedMedia;

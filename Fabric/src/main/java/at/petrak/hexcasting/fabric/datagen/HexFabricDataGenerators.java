@@ -10,9 +10,11 @@ import at.petrak.hexcasting.datagen.tag.HexBlockTagProvider;
 import at.petrak.hexcasting.datagen.tag.HexItemTagProvider;
 import at.petrak.hexcasting.fabric.recipe.FabricModConditionalIngredient;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
+import at.petrak.hexcasting.xplat.IXplatTags;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
@@ -25,18 +27,16 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public class HexFabricDataGenerators implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator gen) {
         HexAPI.LOGGER.info("Starting Fabric-specific datagen");
 
-        var pack = gen.createPack();
-        var xtags = IXplatAbstractions.INSTANCE.tags();
-        var provider = gen.getRegistries();
+        FabricDataGenerator.Pack pack = gen.createPack();
+        IXplatTags xtags = IXplatAbstractions.INSTANCE.tags();
 
-        pack.addProvider((FabricDataGenerator.Pack.Factory<HexplatRecipes>) x -> new HexplatRecipes(x, provider, INGREDIENTS, HexFabricConditionsBuilder::new));
+        pack.addProvider((output, lookup) -> new HexplatRecipes.Runner(output, lookup, INGREDIENTS, HexFabricConditionsBuilder::new));
 
         var btagProviderWrapper = new BlockTagProviderWrapper(); // CURSED
         pack.addProvider((output, lookup) -> {
@@ -47,9 +47,11 @@ public class HexFabricDataGenerators implements DataGeneratorEntrypoint {
 
         pack.addProvider(HexActionTagProvider::new);
 
-        pack.addProvider((FabricDataGenerator.Pack.Factory<LootTableProvider>) (output) -> new LootTableProvider(
-                output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(HexLootTables::new, LootContextParamSets.ALL_PARAMS)), provider
+        pack.addProvider((output, lookup) -> new LootTableProvider(
+                output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(HexLootTables::new, LootContextParamSets.ALL_PARAMS)), lookup
         ));
+
+        pack.addProvider(HexModels::new);
     }
 
     private static class BlockTagProviderWrapper {
@@ -58,11 +60,12 @@ public class HexFabricDataGenerators implements DataGeneratorEntrypoint {
 
     private static final IXplatIngredients INGREDIENTS = new IXplatIngredients() {
         @Override
-        public Ingredient glowstoneDust() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.GLOWSTONE_DUST)),
-                new Ingredient.TagValue(tag("glowstone_dusts"))
-            ));
+        public TagKey<Item> glowstoneDust() {
+                /*return new Ingredient(HolderSet.direct(
+                        Ingredient.of(Items.GLOWSTONE_DUST),
+                        Ingredient.of(items.getOrThrow(tag("glowstone_dusts")))
+                ));*/
+            return ConventionalItemTags.GLOWSTONE_DUSTS;
         }
 
         @Override
@@ -72,68 +75,76 @@ public class HexFabricDataGenerators implements DataGeneratorEntrypoint {
         }
 
         @Override
-        public Ingredient ironNugget() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.IRON_NUGGET)),
-                new Ingredient.TagValue(tag("iron_nuggets"))
-            ));
+        public TagKey<Item> ironNugget() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.IRON_NUGGET)),
+//                        new Ingredient.TagValue(tag("iron_nuggets"))
+//                ));
+            return ConventionalItemTags.IRON_NUGGETS;
         }
 
         @Override
-        public Ingredient goldNugget() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.GOLD_NUGGET)),
-                new Ingredient.TagValue(tag("gold_nuggets"))
-            ));
+        public TagKey<Item> goldNugget() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.GOLD_NUGGET)),
+//                        new Ingredient.TagValue(tag("gold_nuggets"))
+//                ));
+            return ConventionalItemTags.GOLD_NUGGETS;
         }
 
         @Override
-        public Ingredient copperIngot() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.COPPER_INGOT)),
-                new Ingredient.TagValue(tag("copper_ingots"))
-            ));
+        public TagKey<Item> copperIngot() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.COPPER_INGOT)),
+//                        new Ingredient.TagValue(tag("copper_ingots"))
+//                ));
+            return ConventionalItemTags.COPPER_INGOTS;
         }
 
         @Override
-        public Ingredient ironIngot() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.IRON_INGOT)),
-                new Ingredient.TagValue(tag("iron_ingots"))
-            ));
+        public TagKey<Item> ironIngot() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.IRON_INGOT)),
+//                        new Ingredient.TagValue(tag("iron_ingots"))
+//                ));
+            return ConventionalItemTags.IRON_INGOTS;
         }
 
         @Override
-        public Ingredient goldIngot() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.GOLD_INGOT)),
-                new Ingredient.TagValue(tag("gold_ingots"))
-            ));
+        public TagKey<Item> goldIngot() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.GOLD_INGOT)),
+//                        new Ingredient.TagValue(tag("gold_ingots"))
+//                ));
+            return ConventionalItemTags.GOLD_INGOTS;
         }
 
         @Override
-        public EnumMap<DyeColor, Ingredient> dyes() {
-            var out = new EnumMap<DyeColor, Ingredient>(DyeColor.class);
+        public EnumMap<DyeColor, TagKey<Item>> dyes() {
+            var out = new EnumMap<DyeColor, TagKey<Item>>(DyeColor.class);
             for (var col : DyeColor.values()) {
-                out.put(col, new Ingredient(Stream.of(
-                    new Ingredient.ItemValue(new ItemStack(DyeItem.byColor(col))),
-                    new Ingredient.TagValue(
-                        TagKey.create(Registries.ITEM,
-                            ResourceLocation.fromNamespaceAndPath("c", col.getSerializedName() + "_dye"))),
-                    new Ingredient.TagValue(
-                        TagKey.create(Registries.ITEM,
-                            ResourceLocation.fromNamespaceAndPath("c", col.getSerializedName() + "_dyes"))
-                    ))));
+//                    out.put(col, new Ingredient(Stream.of(
+//                            new Ingredient.ItemValue(new ItemStack(DyeItem.byColor(col))),
+//                            new Ingredient.TagValue(
+//                                    TagKey.create(Registries.ITEM,
+//                                            ResourceLocation.fromNamespaceAndPath("c", col.getSerializedName() + "_dye"))),
+//                            new Ingredient.TagValue(
+//                                    TagKey.create(Registries.ITEM,
+//                                            ResourceLocation.fromNamespaceAndPath("c", col.getSerializedName() + "_dyes"))
+//                            ))));
+//                ArrayList<TagKey<Item>> list = new ArrayList<>(List.of(new ItemStack(DyeItem.byColor(col)).getItemHolder()));
+                out.put(col, TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dyes/" + col.getSerializedName())));
             }
             return out;
         }
 
         @Override
-        public Ingredient stick() {
-            return new Ingredient(Stream.of(
-                new Ingredient.ItemValue(new ItemStack(Items.STICK)),
-                new Ingredient.TagValue(tag("wood_sticks"))
-            ));
+        public TagKey<Item> stick() {
+//                return new Ingredient(Stream.of(
+//                        new Ingredient.ItemValue(new ItemStack(Items.STICK)),
+//                        new Ingredient.TagValue(tag("wood_sticks"))
+//                ));
+            return ConventionalItemTags.WOODEN_RODS;
         }
 
         @Override

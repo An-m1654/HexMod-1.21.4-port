@@ -1,6 +1,8 @@
 package at.petrak.hexcasting.fabric.cc;
 
 import at.petrak.hexcasting.api.client.ClientCastingStack;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;

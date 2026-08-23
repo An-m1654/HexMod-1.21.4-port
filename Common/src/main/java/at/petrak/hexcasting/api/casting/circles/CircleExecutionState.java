@@ -163,7 +163,7 @@ public class CircleExecutionState {
         }
         return new Result.Ok<>(
             new CircleExecutionState(impetus.getBlockPos(), impetus.getStartDirection(),
-                reachedPositions, impetus.getBlockPos().offset(impetus.getStartDirection().getNormal()),
+                reachedPositions, impetus.getBlockPos().offset(impetus.getStartDirection().getUnitVec3i()),
                 impetus.getStartDirection(), new CastingImage(), casterUUID, colorizer, 0L,
                 positiveBlock.move(1,1,1), negativeBlock));
     }

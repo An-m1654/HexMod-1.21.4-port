@@ -2,6 +2,7 @@ package at.petrak.hexcasting.client.render;
 
 import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.api.mod.HexConfig;
+import at.petrak.hexcasting.client.entity.WallScrollRenderState;
 import at.petrak.hexcasting.common.blocks.akashic.BlockAkashicBookshelf;
 import at.petrak.hexcasting.common.blocks.akashic.BlockEntityAkashicBookshelf;
 import at.petrak.hexcasting.common.blocks.circles.BlockEntitySlate;
@@ -11,7 +12,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.Vec3;
@@ -47,13 +50,13 @@ public class WorldlyPatternRenderHelpers {
             PatternSettings.ZappySettings.WOBBLY
     );
 
-    public static void renderPatternForScroll(HexPattern pattern, EntityWallScroll scroll, PoseStack ps, MultiBufferSource bufSource, int light, int blockSize, boolean showStrokeOrder)
+    public static void renderPatternForScroll(HexPattern pattern, WallScrollRenderState scroll, PoseStack ps, MultiBufferSource bufSource, int light, int blockSize, boolean showStrokeOrder)
     {
         ps.pushPose();
         ps.translate(-blockSize / 2f, -blockSize / 2f, 1f / 32f);
         renderPattern(pattern, showStrokeOrder ? READABLE_SCROLL_SETTINGS : SCROLL_SETTINGS,
                 showStrokeOrder ? PatternColors.READABLE_SCROLL_COLORS : PatternColors.DEFAULT_PATTERN_COLOR,
-                scroll.getPos().hashCode(), ps, bufSource, null, null, light, blockSize);
+                new BlockPos(Mth.floor(scroll.x), Mth.floor(scroll.y), Mth.floor(scroll.z)).hashCode(), ps, bufSource, null, null, light, blockSize);
         ps.popPose();
     }
 

@@ -10,7 +10,7 @@ public class GaslightingTracker {
     private static int LOOKING_COOLDOWN_MAX = 40;
     private static int LOOKING_COOLDOWN = LOOKING_COOLDOWN_MAX;
 
-    public static ResourceLocation GASLIGHTING_PRED = modLoc("variant");
+    public static ResourceLocation GASLIGHTING_PRED = modLoc("gaslighting");
 
     public static int getGaslightingAmount() {
         LOOKING_COOLDOWN = LOOKING_COOLDOWN_MAX;

@@ -16,6 +16,7 @@ import at.petrak.hexcasting.common.msgs.MsgNewSpellPatternS2C;
 import at.petrak.hexcasting.common.msgs.MsgNewSpiralPatternsS2C;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -62,12 +63,12 @@ public class StaffCastEnv extends PlayerBasedSpiralPatternCastEnv {
     }
 
     @Override
-    public long extractMediaEnvironment(long cost, boolean simulate) {
+    public long extractMediaEnvironment(ServerLevel level, long cost, boolean simulate) {
         if (this.caster.isCreative())
             return 0;
 
         var canOvercast = this.canOvercast();
-        return this.extractMediaFromInventory(cost, canOvercast, simulate);
+        return this.extractMediaFromInventory(level, cost, canOvercast, simulate);
     }
 
     @Override

@@ -3,35 +3,36 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
+//architectury {
+//    platformSetupLoomIde()
+//    fabric()
+//}
 
 // FIXME: update dependencies/versions before releasing 0.12
-pkSubproj {
-    pkPublish = true
-    curseforgeJar = remapJar.archiveFile
-    curseforgeDependencies([
-        "paucal",
-        "patchouli",
-        "fabric-language-kotlin",
-        "inline",
-        "cloth-config",
-        "cardinal-components-api",
-        "fabric-api",
-    ])
-    modrinthJar = remapJar.archiveFile
-    modrinthDependencies([
-        "paucal:dabyDTwJ", // 0.6.0-fabric
-        "patchouli:1.20.1-80-fabric",
-        "fabric-language-kotlin:1.13.7+kotlin.2.2.21",
-        "inline:1.20.1-1.2.2-fabric",
-        "cloth-config:11.1.106+fabric",
-        "cardinal-components-api:5.2.1",
-        "fabric-api:0.84.0+1.20.1",
-    ])
-}
+//pkSubproj {
+//    pkPublish = true
+//    curseforgeJar = remapJar.archiveFile
+//    curseforgeDependencies([
+//        "paucal",
+//        "patchouli",
+//        "fabric-language-kotlin",
+//        "inline",
+//        "cloth-config",
+//        "cardinal-components-api",
+//        "fabric-api",
+//        "fabric-api",
+//    ])
+//    modrinthJar = remapJar.archiveFile
+//    modrinthDependencies([
+//        "paucal:dabyDTwJ", // 0.6.0-fabric
+//        "patchouli:1.20.1-80-fabric",
+//        "fabric-language-kotlin:1.13.7+kotlin.2.2.21",
+//        "inline:1.20.1-1.2.2-fabric",
+//        "cloth-config:11.1.106+fabric",
+//        "cardinal-components-api:5.2.1",
+//        "fabric-api:0.84.0+1.20.1",
+//    ])
+//}
 
 
 loom {
@@ -109,9 +110,8 @@ repositories {
         filter { includeGroup "maven.modrinth" }
     }
     // pehkui
-    maven { url = "https://jitpack.io" }
+//    maven { url = "https://jitpack.io" }
     // accessories
-    maven { url 'https://maven.wispforest.io/releases' }
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
     flatDir {
@@ -120,6 +120,7 @@ repositories {
 }
 
 dependencies {
+    mappings loom.officialMojangMappings()
     modImplementation("net.fabricmc:fabric-language-kotlin:${fabricLanguageKotlinVersion}")
     modImplementation "net.fabricmc:fabric-loader:${fabricLoaderVersion}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
@@ -130,15 +131,16 @@ dependencies {
     // === MANDATORY DEPS ===
     modImplementation("libs:paucal:$paucalVersion+$minecraftVersion-fabric")
     // dear mod devs, don't put the platform in the middle of your version code
-    modImplementation "vazkii.patchouli:Patchouli:1.21-$patchouliVersion-FABRIC-SNAPSHOT"
-    modImplementation "com.samsthenerd.inline:inline-fabric:$minecraftVersion-$inlineVersion"
-    modImplementation "io.wispforest:accessories-fabric:$accessoriesVersion"
+    modImplementation "libs:Patchouli:1.21.4-$patchouliVersion-FABRIC-SNAPSHOT-dev"
+    modImplementation "libs:inline-fabric:$minecraftVersion-$inlineVersion"
+    modImplementation "libs:trinkets:${trinketsVersion}"
 
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:$cardinalComponentsVersion"
 //    modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-util:$cardinalComponentsVersion"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:$cardinalComponentsVersion"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-item:$cardinalComponentsVersion"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-block:$cardinalComponentsVersion"
+    modRuntimeOnly "me.zeroeightsix:fiber:${project.fiber_version}"
 
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.0")))
 
@@ -147,16 +149,16 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modCompileOnly "dev.emi:emi-fabric:${emiVersion}:api"
-    modLocalRuntime "dev.emi:emi-fabric:${emiVersion}"
+//    modCompileOnly "dev.emi:emi-fabric:${emiVersion}:api"
+//    modLocalRuntime "dev.emi:emi-fabric:${emiVersion}"
 
     modLocalRuntime "dev.architectury:architectury-fabric:$architecturyVersion"
-    modLocalRuntime "com.samsthenerd.inline:inline-fabric:$minecraftVersion-$inlineVersion"
+    modLocalRuntime "libs:inline-fabric:$minecraftVersion-$inlineVersion"
 
 //    modImplementation "maven.modrinth:gravity-api:$gravityApiVersion"
-    modApi("com.github.Virtuoel:Pehkui:${pehkuiVersion}", {
-        exclude group: "net.fabricmc.fabric-api"
-    })
+//    modApi("com.github.Virtuoel:Pehkui:${pehkuiVersion}", {
+//        exclude group: "net.fabricmc.fabric-api"
+//    })
 
     // *Something* is including an old version of modmenu with a broken mixin
     // We can't figure out what it is
@@ -197,6 +199,7 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
+    zip64 = true
 }
 
 remapJar {

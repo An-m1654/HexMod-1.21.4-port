@@ -17,20 +17,14 @@ import java.util.Locale;
 public class SealThingsRecipe extends CustomRecipe {
     public final Sealee sealee;
 
-    public static final SimpleCraftingRecipeSerializer<SealThingsRecipe> FOCUS_SERIALIZER =
-        new SimpleCraftingRecipeSerializer<>(SealThingsRecipe::focus);
-    public static final SimpleCraftingRecipeSerializer<SealThingsRecipe> SPELLBOOK_SERIALIZER =
-        new SimpleCraftingRecipeSerializer<>(SealThingsRecipe::spellbook);
+    public static final RecipeSerializer<SealThingsRecipe> FOCUS_SERIALIZER =
+        new CustomRecipe.Serializer<>(SealThingsRecipe::focus);
+    public static final RecipeSerializer<SealThingsRecipe> SPELLBOOK_SERIALIZER =
+        new CustomRecipe.Serializer<>(SealThingsRecipe::spellbook);
 
     public SealThingsRecipe(CraftingBookCategory category, Sealee sealee) {
         super(category);
         this.sealee = sealee;
-    }
-
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
     }
 
     @Override
@@ -73,7 +67,7 @@ public class SealThingsRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends CustomRecipe> getSerializer() {
         return switch (this.sealee) {
             case FOCUS -> FOCUS_SERIALIZER;
             case SPELLBOOK -> SPELLBOOK_SERIALIZER;

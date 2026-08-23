@@ -93,8 +93,8 @@ public class EntityWallScroll extends HangingEntity {
     }
 
     @Override
-    public void dropItem(@Nullable Entity pBrokenEntity) {
-        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+    public void dropItem(ServerLevel level, @Nullable Entity pBrokenEntity) {
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             this.playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.0F);
             if (pBrokenEntity instanceof Player player) {
                 if (player.getAbilities().instabuild) {
@@ -102,7 +102,7 @@ public class EntityWallScroll extends HangingEntity {
                 }
             }
 
-            this.spawnAtLocation(this.scroll);
+            this.spawnAtLocation(level, this.scroll);
         }
     }
 

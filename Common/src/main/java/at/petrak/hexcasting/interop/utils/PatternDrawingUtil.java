@@ -8,8 +8,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 
@@ -26,7 +27,7 @@ public final class PatternDrawingUtil {
         poseStack.translate(x, y, 1);
         var mat = poseStack.last().pose();
         var prevShader = RenderSystem.getShader();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 //        RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -44,17 +45,17 @@ public final class PatternDrawingUtil {
             }
         }
 
-        float dotR = FastColor.ARGB32.red(dotColor) / 255f;
-        float dotG = FastColor.ARGB32.green(dotColor) / 255f;
-        float dotB = FastColor.ARGB32.blue(dotColor) / 255f;
-        float dotA = FastColor.ARGB32.alpha(dotColor) / 255f;
+        float dotR = ARGB.red(dotColor) / 255f;
+        float dotG = ARGB.green(dotColor) / 255f;
+        float dotB = ARGB.blue(dotColor) / 255f;
+        float dotA = ARGB.alpha(dotColor) / 255f;
 
         for (var dot : dots) {
             RenderLib.drawSpot(mat, dot, 1.5f, dotR, dotG, dotB, dotA);
         }
 
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(() -> prevShader);
+        RenderSystem.setShader(prevShader);
 
         RenderSystem.enableCull();
 

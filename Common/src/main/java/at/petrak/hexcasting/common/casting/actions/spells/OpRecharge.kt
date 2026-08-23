@@ -12,6 +12,7 @@ import at.petrak.hexcasting.api.misc.MediaConstants
 import at.petrak.hexcasting.api.utils.extractMedia
 import at.petrak.hexcasting.api.utils.isMediaItem
 import at.petrak.hexcasting.xplat.IXplatAbstractions
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
 
@@ -74,7 +75,7 @@ object OpRecharge : SpellAction {
 
                 itemEntity.item = entityStack
                 if (entityStack.isEmpty)
-                    itemEntity.kill()
+                    itemEntity.kill(itemEntity.level() as ServerLevel)
             }
         }
     }

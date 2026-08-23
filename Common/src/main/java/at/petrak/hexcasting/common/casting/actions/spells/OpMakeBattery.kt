@@ -14,6 +14,7 @@ import at.petrak.hexcasting.api.utils.extractMedia
 import at.petrak.hexcasting.api.utils.isMediaItem
 import at.petrak.hexcasting.common.items.magic.ItemMediaHolder
 import at.petrak.hexcasting.common.lib.HexItems
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
@@ -79,7 +80,7 @@ object OpMakeBattery : SpellAction {
 
             itemEntity.item = entityStack
             if (entityStack.isEmpty)
-                itemEntity.kill()
+                itemEntity.kill(itemEntity.level() as ServerLevel)
         }
     }
 }

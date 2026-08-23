@@ -20,7 +20,7 @@ public class HexArithmetics {
 
     public static ArithmeticEngine getEngine() {
         if (ENGINE == null) {
-            ENGINE = new ArithmeticEngine(REGISTRY.holders().map(Holder.Reference::value).collect(Collectors.toList()));
+            ENGINE = new ArithmeticEngine(REGISTRY.listElements().map(Holder.Reference::value).collect(Collectors.toList()));
         }
         return ENGINE;
     }

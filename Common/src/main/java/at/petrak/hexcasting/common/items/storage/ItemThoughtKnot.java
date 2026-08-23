@@ -16,7 +16,7 @@ import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
 // Would love to be able to just write to a piece of string but the api requires it to be the same item
 public class ItemThoughtKnot extends Item implements IotaHolderItem {
-    public static final ResourceLocation WRITTEN_PRED = modLoc("written");
+    public static final ResourceLocation WRITTEN_PRED = modLoc("thought_knot_written");
 
     public ItemThoughtKnot(Properties properties) {
         super(properties);

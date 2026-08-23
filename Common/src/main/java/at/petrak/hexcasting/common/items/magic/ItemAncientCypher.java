@@ -23,7 +23,7 @@ public class ItemAncientCypher extends ItemCypher {
 
     @Override
     public Component getName(ItemStack stack) {
-        var descID = this.getDescriptionId(stack);
+        var descID = this.getDescriptionId();
         var hexName = stack.get(HexDataComponents.HEX_NAME);
         if (hexName != null) {
             return Component.translatable(descID + ".preset", Component.translatable(hexName));

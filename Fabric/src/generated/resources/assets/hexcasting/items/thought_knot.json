@@ -1,0 +1,65 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/thought_knot",
+          "tints": [
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "hexcasting:hex_tint",
+              "item": {
+                "count": 1,
+                "id": "hexcasting:thought_knot"
+              }
+            }
+          ]
+        },
+        "threshold": 0.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/thought_knot_written",
+          "tints": [
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "hexcasting:hex_tint",
+              "item": {
+                "count": 1,
+                "id": "hexcasting:thought_knot"
+              }
+            }
+          ]
+        },
+        "threshold": 1.0
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "hexcasting:item/thought_knot",
+      "tints": [
+        {
+          "type": "minecraft:constant",
+          "value": -1
+        },
+        {
+          "type": "hexcasting:hex_tint",
+          "item": {
+            "count": 1,
+            "id": "hexcasting:thought_knot"
+          }
+        }
+      ]
+    },
+    "property": "hexcasting:thought_knot_written"
+  }
+}

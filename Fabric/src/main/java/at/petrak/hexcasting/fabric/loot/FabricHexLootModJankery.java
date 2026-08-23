@@ -4,6 +4,7 @@ import at.petrak.hexcasting.common.lib.HexItems;
 import at.petrak.hexcasting.common.loot.AddHexToAncientCypherFunc;
 import at.petrak.hexcasting.common.loot.AddPerWorldPatternToScrollFunc;
 import at.petrak.hexcasting.fabric.FabricHexInitializer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
@@ -24,12 +25,12 @@ import static at.petrak.hexcasting.api.HexAPI.modLoc;
 import static at.petrak.hexcasting.common.loot.HexLootHandler.TABLE_INJECT_AMETHYST_CLUSTER;
 
 public class FabricHexLootModJankery {
-    public static final ResourceLocation FUNC_AMETHYST_SHARD_REDUCER = modLoc("amethyst_shard_reducer");
-    public static final ResourceLocation RANDOM_SCROLL_TABLE = modLoc("random_scroll");
-    public static final ResourceLocation RANDOM_CYPHER_TABLE = modLoc("random_cypher");
+    public static final ResourceKey<LootTable> FUNC_AMETHYST_SHARD_REDUCER = ResourceKey.create(Registries.LOOT_TABLE, modLoc("amethyst_shard_reducer"));
+    public static final ResourceKey<LootTable> RANDOM_SCROLL_TABLE = ResourceKey.create(Registries.LOOT_TABLE, modLoc("random_scroll"));
+    public static final ResourceKey<LootTable> RANDOM_CYPHER_TABLE = ResourceKey.create(Registries.LOOT_TABLE, modLoc("random_cypher"));
 
     public static void lootLoad(ResourceKey<LootTable> id, Consumer<LootPool.Builder> addPool) {
-        if (id.equals(Blocks.AMETHYST_CLUSTER.getLootTable())) {
+        if (Blocks.AMETHYST_CLUSTER.getLootTable().isPresent() && id.equals(Blocks.AMETHYST_CLUSTER.getLootTable().get())) {
             addPool.accept(makeAmethystInjectPool());
         } else if (id.equals(RANDOM_SCROLL_TABLE)) {
             // -1 weight = guaranteed spawn

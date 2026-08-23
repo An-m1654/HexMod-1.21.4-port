@@ -1,0 +1,192 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_0_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 0.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_1"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_1_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_2"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_2_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_3"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_3_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 3.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_4"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_4_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 4.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_5"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_5_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 5.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_6"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_6_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 6.0
+      },
+      {
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_7"
+              },
+              "threshold": -0.01
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "hexcasting:item/ancient_cypher_7_filled"
+              },
+              "threshold": 0.99
+            }
+          ],
+          "property": "hexcasting:has_patterns"
+        },
+        "threshold": 7.0
+      }
+    ],
+    "property": "hexcasting:variant"
+  }
+}

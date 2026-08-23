@@ -4,18 +4,22 @@ import at.petrak.hexcasting.api.misc.MediaConstants;
 import at.petrak.hexcasting.common.lib.HexItems;
 import at.petrak.hexcasting.common.recipe.BrainsweepRecipe;
 import at.petrak.hexcasting.common.recipe.HexRecipeStuffRegistry;
+import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
+import vazkii.patchouli.client.base.ClientRecipes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,16 +31,15 @@ public class BrainsweepProcessor implements IComponentProcessor {
 
 	@Override
 	public void setup(Level level, IVariableProvider vars) {
+        IXplatAbstractions.INSTANCE.askForRecipes();
 		var id = ResourceLocation.parse(vars.get("recipe", level.registryAccess()).asString());
-
-		var recman = level.getRecipeManager();
-		var brainsweepings = recman.getAllRecipesFor(HexRecipeStuffRegistry.BRAINSWEEP_TYPE);
-		for (var poisonApples : brainsweepings) {
-			if (poisonApples.id().equals(id)) {
-				this.recipe = poisonApples.value();
-				break;
-			}
-		}
+        var brainsweepings = ClientRecipes.getRecipesByType(HexRecipeStuffRegistry.BRAINSWEEP_TYPE);
+        for (var poisonApples : brainsweepings) {
+            if (poisonApples.id().location().equals(id)) {
+                this.recipe = poisonApples.value();
+                break;
+            }
+        }
 	}
 
 	@Override

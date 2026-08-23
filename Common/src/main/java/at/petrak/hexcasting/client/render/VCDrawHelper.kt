@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.CoreShaders
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
@@ -51,7 +52,7 @@ interface VCDrawHelper {
         override fun vcSetupAndSupply(vertMode: VertexFormat.Mode): VertexConsumer {
             val tess = Tesselator.getInstance()
             val buf = tess.begin(vertMode, DefaultVertexFormat.POSITION_TEX_COLOR)
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader)
+            RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR)
             RenderSystem.disableCull()
             RenderSystem.enableDepthTest()
             RenderSystem.enableBlend()
@@ -82,11 +83,11 @@ interface VCDrawHelper {
             lastVertMode = vertMode
             val tess = Tesselator.getInstance()
             if(vertMode == VertexFormat.Mode.QUADS){
-                val layer = RenderType.entityTranslucentCull(texture)
+                val layer = RenderType.itemEntityTranslucentCull(texture)
                 layer.setupRenderState()
                 if (provider == null) {
                     val buf = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY)
-                    RenderSystem.setShader { GameRenderer.getRendertypeEntityTranslucentCullShader() }
+                    RenderSystem.setShader(CoreShaders.RENDERTYPE_ITEM_ENTITY_TRANSLUCENT_CULL)
                     return buf
                 } else {
                     return provider.getBuffer(layer)
@@ -105,7 +106,7 @@ interface VCDrawHelper {
             if (Minecraft.useShaderTransparency()) {
                 Minecraft.getInstance().levelRenderer.translucentTarget!!.bindWrite(false)
             }
-            RenderSystem.setShader( GameRenderer::getRendertypeEntityTranslucentCullShader )
+            RenderSystem.setShader(CoreShaders.RENDERTYPE_ITEM_ENTITY_TRANSLUCENT_CULL)
             return buf
         }
 
@@ -121,7 +122,7 @@ interface VCDrawHelper {
         override fun vcEndDrawer(vc: VertexConsumer){
             if(lastVertMode == VertexFormat.Mode.QUADS){
                 if (provider == null && vc is BufferBuilder) {
-                    val layer = RenderType.entityTranslucentCull(texture)
+                    val layer = RenderType.itemEntityTranslucentCull(texture)
                     layer.draw(vc.buildOrThrow()) //TODO port: , VertexSorting.ORTHOGRAPHIC_Z
                 }
             } else {

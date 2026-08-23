@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.phys.Vec2;
@@ -12,6 +12,8 @@ import net.minecraft.world.phys.Vec2;
 import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
 public class PatternTextureManager {
 
@@ -77,8 +79,11 @@ public class PatternTextureManager {
     private static Map<String, ResourceLocation> registerTextures(String patTextureKeyBase, Map<String, DynamicTexture> dynamicTextures) {
         Map<String, ResourceLocation> resLocs = new HashMap<>();
         for(Map.Entry<String, DynamicTexture> textureEntry : dynamicTextures.entrySet()){
-            String name = "hex_pattern_texture_" + patTextureKeyBase + "_" + textureEntry.getKey() + "_" + repaintIndex + ".png";
-            ResourceLocation resourceLocation = Minecraft.getInstance().getTextureManager().register(name, textureEntry.getValue());
+//            String name = "hex_pattern_texture_" + patTextureKeyBase + "_" + textureEntry.getKey() + "_" + repaintIndex + ".png";
+//            ResourceLocation resourceLocation = Minecraft.getInstance().getTextureManager().register(name, textureEntry.getValue());
+//            resLocs.put(textureEntry.getKey(), resourceLocation);
+            ResourceLocation resourceLocation = modLoc("hex_pattern_texture_" + patTextureKeyBase + "_" + textureEntry.getKey() + "_" + repaintIndex);
+            Minecraft.getInstance().getTextureManager().register(resourceLocation, textureEntry.getValue());
             resLocs.put(textureEntry.getKey(), resourceLocation);
         }
         patternTexturesToAdd.put(patTextureKeyBase, resLocs);
@@ -104,9 +109,9 @@ public class PatternTextureManager {
                 double dist = line.ptSegDist(x, y);
                 int alpha = (int) (Mth.clamp(halfWidth - dist + 0.5, 0, 1) * 255);
                 if (alpha > 0) {
-                    int oldAlpha = FastColor.ARGB32.alpha(image.getPixelRGBA(x, y));
+                    int oldAlpha = ARGB.alpha(image.getPixel(x, y));
                     int newAlpha = Math.max(oldAlpha, alpha);
-                    image.setPixelRGBA(x, y, 0xFFFFFF | (newAlpha << 24));
+                    image.setPixel(x, y, 0xFFFFFF | (newAlpha << 24));
                 }
             }
         }

@@ -1,9 +1,7 @@
 package at.petrak.hexcasting.client;
 
 import at.petrak.hexcasting.api.item.IotaHolderItem;
-import at.petrak.hexcasting.api.item.MediaHolderItem;
 import at.petrak.hexcasting.api.item.VariantItem;
-import at.petrak.hexcasting.api.misc.MediaConstants;
 import at.petrak.hexcasting.client.entity.WallScrollRenderer;
 import at.petrak.hexcasting.client.render.GaslightingTracker;
 import at.petrak.hexcasting.client.render.ScryingLensOverlays;
@@ -20,17 +18,16 @@ import at.petrak.hexcasting.common.items.magic.ItemPackagedHex;
 import at.petrak.hexcasting.common.items.storage.*;
 import at.petrak.hexcasting.common.lib.HexBlockEntities;
 import at.petrak.hexcasting.common.lib.HexBlocks;
-import at.petrak.hexcasting.common.lib.HexDataComponents;
-import at.petrak.hexcasting.common.lib.HexItems;
 import at.petrak.hexcasting.xplat.IClientXplatAbstractions;
+import at.petrak.hexcasting.xplat.overrides.*;
 import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperties;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -48,75 +45,99 @@ import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
 public class RegisterClientStuff {
     public static Map<ResourceLocation, List<BakedModel>> QUENCHED_ALLAY_VARIANTS = new HashMap<>();
-    private static final Map<BlockQuenchedAllay, Boolean> QUENCHED_ALLAY_TYPES = Map.of(
+    public static final Map<BlockQuenchedAllay, Boolean> QUENCHED_ALLAY_TYPES = Map.of(
             HexBlocks.QUENCHED_ALLAY, false,
             HexBlocks.QUENCHED_ALLAY_TILES, true,
             HexBlocks.QUENCHED_ALLAY_BRICKS, true,
             HexBlocks.QUENCHED_ALLAY_BRICKS_SMALL, true);
 
     public static void init() {
-        registerSealableDataHolderOverrides(HexItems.FOCUS,
-            stack -> stack.has(HexDataComponents.IOTA_HOLDER_IOTA),
-            ItemFocus::isSealed);
-        registerSealableDataHolderOverrides(HexItems.SPELLBOOK,
-            stack -> HexItems.SPELLBOOK.readIota(stack) != null,
-            ItemSpellbook::isSealed);
-        registerVariantOverrides(HexItems.FOCUS, HexItems.FOCUS::getVariant);
-        registerVariantOverrides(HexItems.SPELLBOOK, HexItems.SPELLBOOK::getVariant);
-        registerVariantOverrides(HexItems.ANCIENT_CYPHER, HexItems.ANCIENT_CYPHER::getVariant);
-        registerVariantOverrides(HexItems.CYPHER, HexItems.CYPHER::getVariant);
-        registerVariantOverrides(HexItems.TRINKET, HexItems.TRINKET::getVariant);
-        registerVariantOverrides(HexItems.ARTIFACT, HexItems.ARTIFACT::getVariant);
-        IClientXplatAbstractions.INSTANCE.registerItemProperty(HexItems.THOUGHT_KNOT, ItemThoughtKnot.WRITTEN_PRED,
-            (stack, level, holder, holderID) -> {
-                if (stack.has(HexDataComponents.IOTA_HOLDER_IOTA)) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            });
-
-        registerPackagedSpellOverrides(HexItems.ANCIENT_CYPHER);
-        registerPackagedSpellOverrides(HexItems.CYPHER);
-        registerPackagedSpellOverrides(HexItems.TRINKET);
-        registerPackagedSpellOverrides(HexItems.ARTIFACT);
-
         var x = IClientXplatAbstractions.INSTANCE;
-        x.registerItemProperty(HexItems.BATTERY, ItemMediaBattery.MEDIA_PREDICATE,
-            (stack, level, holder, holderID) -> {
-                var item = (MediaHolderItem) stack.getItem();
-                return item.getMediaFullness(stack);
-            });
-        x.registerItemProperty(HexItems.BATTERY, ItemMediaBattery.MAX_MEDIA_PREDICATE,
-            (stack, level, holder, holderID) -> {
-                var item = (ItemMediaBattery) stack.getItem();
-                var max = item.getMaxMedia(stack);
-                return 1.049658f * (float) Math.log((float) max / MediaConstants.CRYSTAL_UNIT + 9.06152f) - 2.1436f;
-            });
+        // TODO: REMEMBER TO REGISTER THE OVERRIDES AT THE END!!!!!!!
+        // TODO: registerSealableDataHolderOverrides (SHOULD SEPARATE THE TWO THAT USES IT)
+        // ME: AY AY, ON IT, CAPTAIN
+        // I DID IT, CAPTAIN!!!!!!!!!
 
-        registerScrollOverrides(HexItems.SCROLL_SMOL);
-        registerScrollOverrides(HexItems.SCROLL_MEDIUM);
-        registerScrollOverrides(HexItems.SCROLL_LARGE);
+        // registerVariantOverrides
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemFocus.VARIANT_PRED, VariantPredicate.MAP_CODEC);
+        // registerSealableDataHolderOverrides
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemFocus.OVERLAY_PRED, OverlayPredicate.MAP_CODEC);
+        // ThoughtKnot WRITTEN predicate
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemThoughtKnot.WRITTEN_PRED, ThoughtKnotWrittenPredicate.MAP_CODEC);
+        // registerScrollOverrides
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemScroll.ANCIENT_PREDICATE, AncientPredicate.MAP_CODEC);
+        // registerWandOverrides
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemStaff.FUNNY_LEVEL_PREDICATE, FunnyLevelPredicate.MAP_CODEC);
+        // registerGaslight4
+        RangeSelectItemModelProperties.ID_MAPPER.put(GaslightingTracker.GASLIGHTING_PRED, GasLightingPredicate.MAP_CODEC);
+        // registerPackagedSpellOverrides
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemPackagedHex.HAS_PATTERNS_PRED, HasPatternsPredicate.MAP_CODEC);
+        // Not in a function
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemMediaBattery.MEDIA_PREDICATE, MediaPredicate.MAP_CODEC);
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemMediaBattery.MAX_MEDIA_PREDICATE, MaxMediaPredicate.MAP_CODEC);
+        RangeSelectItemModelProperties.ID_MAPPER.put(ItemSlate.WRITTEN_PRED, ItemSlateWrittenPredicate.MAP_CODEC);
 
-        x.registerItemProperty(HexItems.SLATE, ItemSlate.WRITTEN_PRED,
-            (stack, level, holder, holderID) -> ItemSlate.hasPattern(stack) ? 1f : 0f);
+//        registerSealableDataHolderOverrides(HexItems.FOCUS,
+//            stack -> stack.has(HexDataComponents.IOTA_HOLDER_IOTA),
+//            ItemFocus::isSealed);
+//        registerSealableDataHolderOverrides(HexItems.SPELLBOOK,
+//            stack -> HexItems.SPELLBOOK.readIota(stack) != null,
+//            ItemSpellbook::isSealed);
+//        registerVariantOverrides(HexItems.FOCUS, HexItems.FOCUS::getVariant);
+//        registerVariantOverrides(HexItems.SPELLBOOK, HexItems.SPELLBOOK::getVariant);
+//        registerVariantOverrides(HexItems.ANCIENT_CYPHER, HexItems.ANCIENT_CYPHER::getVariant);
+//        registerVariantOverrides(HexItems.CYPHER, HexItems.CYPHER::getVariant);
+//        registerVariantOverrides(HexItems.TRINKET, HexItems.TRINKET::getVariant);
+//        registerVariantOverrides(HexItems.ARTIFACT, HexItems.ARTIFACT::getVariant);
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty(HexItems.THOUGHT_KNOT, ItemThoughtKnot.WRITTEN_PRED,
+//            (stack, level, holder, holderID) -> {
+//                if (stack.has(HexDataComponents.IOTA_HOLDER_IOTA)) {
+//                    return 1;
+//                } else {
+//                    return 0;
+//                }
+//            });
 
-        registerWandOverrides(HexItems.STAFF_OAK);
-        registerWandOverrides(HexItems.STAFF_BIRCH);
-        registerWandOverrides(HexItems.STAFF_SPRUCE);
-        registerWandOverrides(HexItems.STAFF_JUNGLE);
-        registerWandOverrides(HexItems.STAFF_DARK_OAK);
-        registerWandOverrides(HexItems.STAFF_ACACIA);
-        registerWandOverrides(HexItems.STAFF_EDIFIED);
+//        registerPackagedSpellOverrides(HexItems.ANCIENT_CYPHER);
+//        registerPackagedSpellOverrides(HexItems.CYPHER);
+//        registerPackagedSpellOverrides(HexItems.TRINKET);
+//        registerPackagedSpellOverrides(HexItems.ARTIFACT);
+
+//        x.registerItemProperty(HexItems.BATTERY, ItemMediaBattery.MEDIA_PREDICATE,
+//            (stack, level, holder, holderID) -> {
+//                var item = (MediaHolderItem) stack.getItem();
+//                return item.getMediaFullness(stack);
+//            });
+//        x.registerItemProperty(HexItems.BATTERY, ItemMediaBattery.MAX_MEDIA_PREDICATE,
+//            (stack, level, holder, holderID) -> {
+//                var item = (ItemMediaBattery) stack.getItem();
+//                var max = item.getMaxMedia(stack);
+//                return 1.049658f * (float) Math.log((float) max / MediaConstants.CRYSTAL_UNIT + 9.06152f) - 2.1436f;
+//            });
+
+//        registerScrollOverrides(HexItems.SCROLL_SMOL);
+//        registerScrollOverrides(HexItems.SCROLL_MEDIUM);
+//        registerScrollOverrides(HexItems.SCROLL_LARGE);
+
+//        x.registerItemProperty(HexItems.SLATE, ItemSlate.WRITTEN_PRED,
+//            (stack, level, holder, holderID) -> ItemSlate.hasPattern(stack) ? 1f : 0f);
+
+//        registerWandOverrides(HexItems.STAFF_OAK);
+//        registerWandOverrides(HexItems.STAFF_BIRCH);
+//        registerWandOverrides(HexItems.STAFF_SPRUCE);
+//        registerWandOverrides(HexItems.STAFF_JUNGLE);
+//        registerWandOverrides(HexItems.STAFF_DARK_OAK);
+//        registerWandOverrides(HexItems.STAFF_ACACIA);
+//        registerWandOverrides(HexItems.STAFF_EDIFIED);
         // purposely skip quenched
-        registerWandOverrides(HexItems.STAFF_MINDSPLICE);
+//        registerWandOverrides(HexItems.STAFF_MINDSPLICE);
 
-        registerGaslight4(HexItems.STAFF_QUENCHED);
-        registerGaslight4(HexBlocks.QUENCHED_ALLAY.asItem());
-        registerGaslight4(HexBlocks.QUENCHED_ALLAY_TILES.asItem());
-        registerGaslight4(HexBlocks.QUENCHED_ALLAY_BRICKS.asItem());
-        registerGaslight4(HexBlocks.QUENCHED_ALLAY_BRICKS_SMALL.asItem());
-        registerGaslight4(HexItems.QUENCHED_SHARD);
+//        registerGaslight4(HexItems.STAFF_QUENCHED);
+//        registerGaslight4(HexBlocks.QUENCHED_ALLAY.asItem());
+//        registerGaslight4(HexBlocks.QUENCHED_ALLAY_TILES.asItem());
+//        registerGaslight4(HexBlocks.QUENCHED_ALLAY_BRICKS.asItem());
+//        registerGaslight4(HexBlocks.QUENCHED_ALLAY_BRICKS_SMALL.asItem());
+//        registerGaslight4(HexItems.QUENCHED_SHARD);
 
         x.setRenderLayer(HexBlocks.CONJURED_LIGHT, RenderType.cutout());
         x.setRenderLayer(HexBlocks.CONJURED_BLOCK, RenderType.cutout());
@@ -145,17 +166,22 @@ public class RegisterClientStuff {
         ScryingLensOverlays.addScryingLensStuff();
     }
 
+    @Deprecated
     private static void registerGaslight4(Item item) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty(item,
-            GaslightingTracker.GASLIGHTING_PRED, (stack, level, holder, holderID) ->
-                Math.abs(GaslightingTracker.getGaslightingAmount() % 4));
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty(item,
+//            GaslightingTracker.GASLIGHTING_PRED, (stack, level, holder, holderID) ->
+//                Math.abs(GaslightingTracker.getGaslightingAmount() % 4));
     }
 
-    public static void registerColorProviders(BiConsumer<ItemColor, Item> itemColorRegistry,
-        BiConsumer<BlockColor, Block> blockColorRegistry) {
-        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.FOCUS::getColor), HexItems.FOCUS);
-        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.SPELLBOOK::getColor), HexItems.SPELLBOOK);
-        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.THOUGHT_KNOT::getColor), HexItems.THOUGHT_KNOT);
+    public static void registerColorProviders(BiConsumer<BlockColor, Block> blockColorRegistry) {
+        //BiConsumer<ItemColor, Item> itemColorRegistry { colorizer, item -> ColorProviderRegistry.ITEM.register(colorizer, item) },
+        ItemTintSources.ID_MAPPER.put(modLoc("hex_tint"), IotaStorageColorizerTintSource.MAP_CODEC);
+        //TODO: DO THIS COLORING PLS DON'T FORGET
+        //AY AY, I DID IT
+//-     This is now done in IotaStorageColorizerTintSource:
+//        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.FOCUS::getColor), HexItems.FOCUS);
+//        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.SPELLBOOK::getColor), HexItems.SPELLBOOK);
+//        itemColorRegistry.accept(makeIotaStorageColorizer(HexItems.THOUGHT_KNOT::getColor), HexItems.THOUGHT_KNOT);
 
         blockColorRegistry.accept((bs, level, pos, idx) -> {
             if (!bs.getValue(BlockAkashicBookshelf.HAS_BOOKS) || level == null || pos == null) {
@@ -179,61 +205,66 @@ public class RegisterClientStuff {
      * <br>
      * 0 = base; 1 = overlay
      */
-    public static ItemColor makeIotaStorageColorizer(ToIntFunction<ItemStack> getColor) {
-        return (stack, idx) -> {
-            if (idx == 1) {
-                return getColor.applyAsInt(stack);
-            }
-            return 0xff_ffffff;
-        };
+//    public static ItemColor makeIotaStorageColorizer(ToIntFunction<ItemStack> getColor) {
+//        return (stack, tintIndex) -> {
+//            if (tintIndex == 1) {
+//                return getColor.applyAsInt(stack);
+//            }
+//            return 0xff_ffffff;
+//        };
+//    }
+
+    @Deprecated
+    public static void registerSealableDataHolderOverrides(IotaHolderItem item, Predicate<ItemStack> hasIota,
+                                               Predicate<ItemStack> isSealed) {
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty((Item) item, ItemFocus.OVERLAY_PRED,
+//            (stack, level, holder, holderID) -> {
+//                if (!hasIota.test(stack) && !stack.has(HexDataComponents.VISUAL_OVERRIDE)) {
+//                    return 0;
+//                }
+//                if (!isSealed.test(stack)) {
+//                    return 1;
+//                }
+//                return 2;
+//            });
     }
 
-    private static void registerSealableDataHolderOverrides(IotaHolderItem item, Predicate<ItemStack> hasIota,
-        Predicate<ItemStack> isSealed) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty((Item) item, ItemFocus.OVERLAY_PRED,
-            (stack, level, holder, holderID) -> {
-                if (!hasIota.test(stack) && !stack.has(HexDataComponents.VISUAL_OVERRIDE)) {
-                    return 0;
-                }
-                if (!isSealed.test(stack)) {
-                    return 1;
-                }
-                return 2;
-            });
-    }
-
+    @Deprecated
     private static void registerVariantOverrides(VariantItem item, Function<ItemStack, Integer> variant) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty((Item) item, ItemFocus.VARIANT_PRED,
-                (stack, level, holder, holderID) -> variant.apply(stack));
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty((Item) item, ItemFocus.VARIANT_PRED,
+//                (stack, level, holder, holderID) -> variant.apply(stack));
     }
 
+    @Deprecated
     private static void registerScrollOverrides(ItemScroll scroll) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty(scroll, ItemScroll.ANCIENT_PREDICATE,
-            (stack, level, holder, holderID) -> stack.has(HexDataComponents.ACTION) ? 1f : 0f);
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty(scroll, ItemScroll.ANCIENT_PREDICATE,
+//            (stack, level, holder, holderID) -> stack.has(HexDataComponents.ACTION) ? 1f : 0f);
     }
 
+    @Deprecated
     private static void registerPackagedSpellOverrides(ItemPackagedHex item) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty(item, ItemPackagedHex.HAS_PATTERNS_PRED,
-            (stack, level, holder, holderID) ->
-                item.hasHex(stack) ? 1f : 0f
-        );
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty(item, ItemPackagedHex.HAS_PATTERNS_PRED,
+//            (stack, level, holder, holderID) ->
+//                item.hasHex(stack) ? 1f : 0f
+//        );
     }
 
+    @Deprecated
     private static void registerWandOverrides(ItemStaff item) {
-        IClientXplatAbstractions.INSTANCE.registerItemProperty(item, ItemStaff.FUNNY_LEVEL_PREDICATE,
-            (stack, level, holder, holderID) -> {
-                if (!stack.has(DataComponents.CUSTOM_NAME)) {
-                    return 0;
-                }
-                var name = stack.getHoverName().getString().toLowerCase(Locale.ROOT);
-                if (name.contains("old")) {
-                    return 1f;
-                } else if (name.contains("cherry")) {
-                    return 2f;
-                } else {
-                    return 0f;
-                }
-            });
+//        IClientXplatAbstractions.INSTANCE.registerItemProperty(item, ItemStaff.FUNNY_LEVEL_PREDICATE,
+//            (stack, level, holder, holderID) -> {
+//                if (!stack.has(DataComponents.CUSTOM_NAME)) {
+//                    return 0;
+//                }
+//                var name = stack.getHoverName().getString().toLowerCase(Locale.ROOT);
+//                if (name.contains("old")) {
+//                    return 1f;
+//                } else if (name.contains("cherry")) {
+//                    return 2f;
+//                } else {
+//                    return 0f;
+//                }
+//            });
     }
 
     public static void registerBlockEntityRenderers(@NotNull BlockEntityRendererRegisterererer registerer) {
@@ -287,7 +318,7 @@ public class RegisterClientStuff {
         }
     }
 
-    public static void onModelBake(ModelBakery loader, Map<ModelResourceLocation, BakedModel> map) {
+    public static void onModelBake(Function<ResourceLocation, BakedModel> getter) {
         for (var type : QUENCHED_ALLAY_TYPES.entrySet()) {
             var blockLoc = BuiltInRegistries.BLOCK.getKey(type.getKey());
             var locStart = "block/";
@@ -296,8 +327,8 @@ public class RegisterClientStuff {
 
             var list = new ArrayList<BakedModel>();
             for (int i = 0; i < BlockQuenchedAllay.VARIANTS; i++) {
-                var variantLoc = new ModelResourceLocation(modLoc(locStart + blockLoc.getPath() + "_" + i), IClientXplatAbstractions.INSTANCE.getModelLocVariant());
-                var model = map.get(variantLoc);
+//                var variantLoc = new ModelResourceLocation(modLoc(locStart + blockLoc.getPath() + "_" + i), IClientXplatAbstractions.INSTANCE.getModelLocVariant());
+                var model = getter.apply(modLoc(locStart + blockLoc.getPath() + "_" + i));
                 list.add(model);
             }
             QUENCHED_ALLAY_VARIANTS.put(blockLoc, list);

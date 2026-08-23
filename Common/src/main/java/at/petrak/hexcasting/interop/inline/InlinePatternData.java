@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class InlinePatternData implements InlineData<InlinePatternData>{
+public class InlinePatternData implements InlineData<InlinePatternData> {
 
     public static final ResourceLocation rendererId = HexAPI.modLoc("pattern");
 

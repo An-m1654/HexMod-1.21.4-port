@@ -8,6 +8,7 @@ import at.petrak.hexcasting.api.mod.HexStatistics
 import at.petrak.hexcasting.api.pigment.FrozenPigment
 import at.petrak.hexcasting.api.utils.asTranslatedComponent
 import at.petrak.hexcasting.common.lib.HexItems
+import com.mojang.logging.LogUtils
 import net.minecraft.Util
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.DyeColor
@@ -22,7 +23,11 @@ sealed class OperatorSideEffect {
 
     data class RequiredEnlightenment(val awardStat: Boolean) : OperatorSideEffect() {
         override fun performEffect(harness: CastingVM) {
-            harness.env.castingEntity?.sendSystemMessage("hexcasting.message.cant_great_spell".asTranslatedComponent)
+            if (harness.env.castingEntity is ServerPlayer) {
+                (harness.env.castingEntity as ServerPlayer).sendSystemMessage("hexcasting.message.cant_great_spell".asTranslatedComponent)
+            } else {
+                LogUtils.getLogger().warn("CastingEntity is NOT a serverPlayer!!! at/petrak/hexcasting/api/casting/eval/sideeffects/OperatorSideEffect.kt:29")
+            }
         }
     }
 
@@ -42,7 +47,7 @@ sealed class OperatorSideEffect {
 
     data class ConsumeMedia(val amount: Long) : OperatorSideEffect() {
         override fun performEffect(harness: CastingVM) {
-            harness.env.extractMedia(this.amount, false)
+            harness.env.extractMedia(harness.env.world, this.amount, false)
         }
     }
 

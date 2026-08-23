@@ -2,8 +2,10 @@ package at.petrak.hexcasting.common.items.storage;
 
 import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.item.IotaHolderItem;
+import at.petrak.hexcasting.api.item.OverlayItem;
 import at.petrak.hexcasting.api.item.VariantItem;
 import at.petrak.hexcasting.common.lib.HexDataComponents;
+import at.petrak.hexcasting.common.lib.HexItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -18,11 +20,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static at.petrak.hexcasting.common.items.storage.ItemFocus.NUM_VARIANTS;
 
-public class ItemSpellbook extends Item implements IotaHolderItem, VariantItem {
+public class ItemSpellbook extends Item implements IotaHolderItem, VariantItem, OverlayItem {
     public static final int MAX_PAGES = 64;
 
     public ItemSpellbook(Properties properties) {
@@ -233,6 +236,17 @@ public class ItemSpellbook extends Item implements IotaHolderItem, VariantItem {
         }
     }
 
+    @Override
+    public Predicate<ItemStack> hasIota() {
+        return stack -> this.readIota(stack) != null;
+    }
+
+    @Override
+    public Predicate<ItemStack> isSealed() {
+        return ItemSpellbook::isSealed;
+    }
+
+
     public static boolean isSealed(ItemStack stack) {
         int index = getPage(stack, 1);
 
@@ -243,6 +257,7 @@ public class ItemSpellbook extends Item implements IotaHolderItem, VariantItem {
         var v = seals.get(nameKey);
         return v != null && v;
     }
+
 
     public static int highestPage(ItemStack stack) {
         var pages = stack.get(HexDataComponents.SPELLBOOK_PAGES);

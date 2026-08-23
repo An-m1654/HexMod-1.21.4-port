@@ -7,7 +7,7 @@ import at.petrak.hexcasting.common.lib.HexDataComponents;
 import at.petrak.hexcasting.common.lib.HexSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class ItemAbacus extends Item implements IotaHolderItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             Double oldNum = stack.get(HexDataComponents.ABACUS_VALUE);
@@ -58,9 +58,9 @@ public class ItemAbacus extends Item implements IotaHolderItem {
             }
             player.displayClientMessage(Component.translatable(key), true);
 
-            return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
+            return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         } else {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
     }
 

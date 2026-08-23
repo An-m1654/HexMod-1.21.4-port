@@ -2,6 +2,7 @@ package at.petrak.hexcasting.fabric.mixin.client;
 
 import at.petrak.hexcasting.client.RegisterClientStuff;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.fabricmc.fabric.api.client.model.loading.v1.FabricBakedModelManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
@@ -20,14 +21,14 @@ import java.util.Map;
 @Mixin(ModelManager.class)
 public class FabricModelManagerMixin {
     @Shadow
-    private Map<ModelResourceLocation, BakedModel> bakedRegistry;
+    private Map<ModelResourceLocation, BakedModel> bakedBlockStateModels;
 
-    @Inject(at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/resources/model/ModelBakery;" +
-            "getBakedTopLevelModels()Ljava/util/Map;", shift = At.Shift.AFTER),
-            method = "apply(Lnet/minecraft/client/resources/model/ModelManager$ReloadState;Lnet/minecraft/util/profiling/ProfilerFiller;)V"
-    )
-    private void onModelBake(ModelManager.ReloadState reloadState, ProfilerFiller profiler, CallbackInfo ci, @Local ModelBakery modelLoader) {
-        Map<ModelResourceLocation, BakedModel> newRegistry = new HashMap<>(this.bakedRegistry);
-        RegisterClientStuff.onModelBake(modelLoader, newRegistry);
+//    @Inject(at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/resources/model/ModelBakery$BakingResult;blockStateModels()Ljava/util/Map;", shift = At.Shift.AFTER),
+//            method = "apply(Lnet/minecraft/client/resources/model/ModelManager$ReloadState;Lnet/minecraft/util/profiling/ProfilerFiller;)V"
+//    )
+    @Inject(at = @At(value = "TAIL"), method = "apply(Lnet/minecraft/client/resources/model/ModelManager$ReloadState;Lnet/minecraft/util/profiling/ProfilerFiller;)V")
+    private void onModelBake(ModelManager.ReloadState reloadState, ProfilerFiller profiler, CallbackInfo ci) {
+//        Map<ModelResourceLocation, BakedModel> newRegistry = new HashMap<>(this.bakedBlockStateModels);
+        RegisterClientStuff.onModelBake(loc -> ((FabricBakedModelManager) this).getModel(loc));
     }
 }

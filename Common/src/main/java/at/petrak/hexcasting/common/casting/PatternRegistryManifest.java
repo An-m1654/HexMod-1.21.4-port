@@ -44,11 +44,11 @@ public class PatternRegistryManifest {
         var registry = IXplatAbstractions.INSTANCE.getActionRegistry();
         for (var key : registry.registryKeySet()) {
             var entry = registry.get(key);
-            if (entry == null)
+            if (entry.isEmpty())
                 continue;
 
             if (!HexUtils.isOfTag(registry, key, HexTags.Actions.PER_WORLD_PATTERN)) {
-                var old = NORMAL_ACTION_LOOKUP.put(entry.prototype().getAngles(), key);
+                var old = NORMAL_ACTION_LOOKUP.put(entry.orElseThrow().value().prototype().getAngles(), key);
                 if (old != null) {
                     HexAPI.LOGGER.warn("Inserted %s which has same signature as %s, overriding it.".formatted(key, old));
                 }
@@ -72,9 +72,9 @@ public class PatternRegistryManifest {
         var registry = IXplatAbstractions.INSTANCE.getSpecialHandlerRegistry();
         for (var key : registry.registryKeySet()) {
             var factory = registry.get(key);
-            if (factory == null)
+            if (factory.isEmpty())
                 continue;
-            var handler = factory.tryMatch(pat,environment);
+            var handler = factory.get().value().tryMatch(pat,environment);
             if (handler != null) {
                 return Pair.of(handler, key);
             }

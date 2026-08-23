@@ -114,7 +114,7 @@ public class ItemScroll extends Item implements IotaHolderItem {
             }
 
             itemstack.shrink(1);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         } else {
             return InteractionResult.CONSUME;
         }
@@ -127,7 +127,7 @@ public class ItemScroll extends Item implements IotaHolderItem {
 
     @Override
     public Component getName(ItemStack pStack) {
-        var descID = this.getDescriptionId(pStack);
+        var descID = this.getDescriptionId();
         var ancientAction = pStack.get(HexDataComponents.ACTION);
         if (ancientAction != null) {
             return Component.translatable(descID + ".of",
@@ -138,7 +138,7 @@ public class ItemScroll extends Item implements IotaHolderItem {
             if (pattern != null) {
                 patternLabel = Component.literal(": ").append(new InlinePatternData(pattern).asText(false));
             }
-            return Component.translatable(descID).append(patternLabel);
+            return Component.translatable(descID.toString()).append(patternLabel);
         } else {
             return Component.translatable(descID + ".empty");
         }

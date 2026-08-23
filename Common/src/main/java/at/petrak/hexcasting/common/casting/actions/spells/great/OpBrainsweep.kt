@@ -19,10 +19,12 @@ import at.petrak.hexcasting.ktxt.tellWitnessesThatIWasMurdered
 import at.petrak.hexcasting.mixin.accessor.AccessorLivingEntity
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import net.minecraft.core.BlockPos
+import net.minecraft.resources.ResourceKey
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.npc.Villager
+import net.minecraft.world.item.crafting.RecipeMap
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 
@@ -54,8 +56,8 @@ object OpBrainsweep : SpellAction {
 
         val state = env.world.getBlockState(pos)
 
-        val recman = env.world.recipeManager
-        val recipes = recman.getAllRecipesFor(HexRecipeStuffRegistry.BRAINSWEEP_TYPE)
+        val recman = env.world.recipeAccess()
+        val recipes = RecipeMap.create(recman.recipes).byType(HexRecipeStuffRegistry.BRAINSWEEP_TYPE)
         val recipe = recipes.asSequence()
             .map { it.value }
             .find { it.matches(state, sacrifice, env.world) }

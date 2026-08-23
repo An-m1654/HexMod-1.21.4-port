@@ -46,7 +46,7 @@ object OpAltiora : SpellAction {
     // TODO: this sends a packet to the player every tick. I need to find out what the monotonically increasing time value is
     @JvmStatic
     fun checkPlayerCollision(player: ServerPlayer) {
-        val altiora = IXplatAbstractions.INSTANCE.getAltiora(player);
+        val altiora = IXplatAbstractions.INSTANCE.getAltiora(player)
         if (altiora != null) {
             if (altiora.gracePeriod == 0 && (player.onGround() || player.horizontalCollision)) {
                 IXplatAbstractions.INSTANCE.setAltiora(player, null)

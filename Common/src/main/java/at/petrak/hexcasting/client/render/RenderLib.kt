@@ -13,8 +13,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.util.FastColor
-import net.minecraft.util.FastColor.ARGB32
+import net.minecraft.util.ARGB
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.Level
@@ -66,19 +65,19 @@ fun drawLineSeq(
 ) {
     if (points.size <= 1) return
 
-    val r1 = FastColor.ARGB32.red(tail).toFloat()
-    val g1 = FastColor.ARGB32.green(tail).toFloat()
-    val b1 = FastColor.ARGB32.blue(tail).toFloat()
-    val a = FastColor.ARGB32.alpha(tail)
+    val r1 = ARGB.red(tail).toFloat()
+    val g1 = ARGB.green(tail).toFloat()
+    val b1 = ARGB.blue(tail).toFloat()
+    val a = ARGB.alpha(tail)
     val a1 = a.toFloat()
     val headSource = if (Screen.hasControlDown() != HexConfig.client().ctrlTogglesOffStrokeOrder())
         head
     else
         tail
-    val r2 = FastColor.ARGB32.red(headSource).toFloat()
-    val g2 = FastColor.ARGB32.green(headSource).toFloat()
-    val b2 = FastColor.ARGB32.blue(headSource).toFloat()
-    val a2 = FastColor.ARGB32.alpha(headSource).toFloat()
+    val r2 = ARGB.red(headSource).toFloat()
+    val g2 = ARGB.green(headSource).toFloat()
+    val b2 = ARGB.blue(headSource).toFloat()
+    val a2 = ARGB.alpha(headSource).toFloat()
 
     var vc = vcHelper.vcSetupAndSupply(VertexFormat.Mode.TRIANGLES)
 
@@ -109,7 +108,7 @@ fun drawLineSeq(
         val normal = Vec2(-tangent.y, tangent.x)
 
         fun color(time: Float): Int =
-            FastColor.ARGB32.color(Mth.lerp(time, a1, a2).toInt(), Mth.lerp(time, r1, r2).toInt(),
+            ARGB.color(Mth.lerp(time, a1, a2).toInt(), Mth.lerp(time, r1, r2).toInt(),
                 Mth.lerp(time, g1, g2).toInt(), Mth.lerp(time, b1, b2).toInt())
 
         val color1 = color(i.toFloat() / n)
@@ -190,8 +189,8 @@ fun drawLineSeq(
         }
         vcHelper.vcEndDrawer(vc)
     }
-    drawCaps(ARGB32.color(a1.toInt(), r1.toInt(), g1.toInt(), b1.toInt()), points[0], points[1])
-    drawCaps(ARGB32.color(a2.toInt(), r2.toInt(), g2.toInt(), b2.toInt()), points[n - 1], points[n - 2])
+    drawCaps(ARGB.color(a1.toInt(), r1.toInt(), g1.toInt(), b1.toInt()), points[0], points[1])
+    drawCaps(ARGB.color(a2.toInt(), r2.toInt(), g2.toInt(), b2.toInt()), points[n - 1], points[n - 2])
 }
 
 
@@ -230,10 +229,10 @@ fun drawPatternFromPoints(
             mat,
             node,
             2f,
-            dodge(FastColor.ARGB32.red(head)) / 255f,
-            dodge(FastColor.ARGB32.green(head)) / 255f,
-            dodge(FastColor.ARGB32.blue(head)) / 255f,
-            FastColor.ARGB32.alpha(head) / 255f
+            dodge(ARGB.red(head)) / 255f,
+            dodge(ARGB.green(head)) / 255f,
+            dodge(ARGB.blue(head)) / 255f,
+            ARGB.alpha(head) / 255f
         )
     }
 }
@@ -350,7 +349,7 @@ fun <T> findDupIndices(pts: Iterable<T>): Set<Int> {
  * include primitive drawing code...
  */
 fun drawSpot(mat: Matrix4f, point: Vec2, radius: Float, r: Float, g: Float, b: Float, a: Float) {
-    drawSpot(mat, point, radius, ARGB32.color((a*255).toInt(), (r*255).toInt(), (g*255).toInt(), (b*255).toInt()), VCDrawHelper.Basic(1f))
+    drawSpot(mat, point, radius, ARGB.color((a*255).toInt(), (r*255).toInt(), (g*255).toInt(), (b*255).toInt()), VCDrawHelper.Basic(1f))
 }
 
 fun drawSpot(mat: Matrix4f, point: Vec2, radius: Float, color: Int, vcHelper: VCDrawHelper) {
@@ -372,11 +371,11 @@ fun drawSpot(mat: Matrix4f, point: Vec2, radius: Float, color: Int, vcHelper: VC
 }
 
 fun screenCol(n: Int): Int {
-    return FastColor.ARGB32.color(
-        FastColor.ARGB32.alpha(n),
-        screen(FastColor.ARGB32.red(n)),
-        screen(FastColor.ARGB32.green(n)),
-        screen(FastColor.ARGB32.blue(n)),
+    return ARGB.color(
+        ARGB.alpha(n),
+        screen(ARGB.red(n)),
+        screen(ARGB.green(n)),
+        screen(ARGB.blue(n)),
     )
 }
 
@@ -430,7 +429,7 @@ fun renderEntity(
     val erd = Minecraft.getInstance().entityRenderDispatcher
     val immediate = Minecraft.getInstance().renderBuffers().bufferSource()
     erd.setRenderShadow(false)
-    erd.render(entity, 0.0, 0.0, 0.0, 0.0f, 1.0f, ps, bufferTransformer(immediate), 0xf000f0)
+    erd.render(entity, 0.0, 0.0, 0.0, 0.0f, ps, bufferTransformer(immediate), 0xf000f0)
     erd.setRenderShadow(true)
     immediate.endBatch()
     ps.popPose()

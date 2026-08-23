@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 
 import java.util.function.Function;
 
@@ -26,8 +27,8 @@ public final class HexRenderTypes extends RenderType {
 
     private static final Function<ResourceLocation, RenderType> GRAYSCALE_PROVIDER = Util.memoize(texture -> {
         CompositeState glState = RenderType.CompositeState.builder()
-            .setShaderState(new ShaderStateShard(HexShaders::grayscale))
-            .setTextureState(new TextureStateShard(texture, false, false))
+            .setShaderState(new ShaderStateShard(HexShaders.grayscale()))
+            .setTextureState(new TextureStateShard(texture, TriState.FALSE, false))
             .setTransparencyState(NO_TRANSPARENCY)
             .setCullState(NO_CULL)
             .setLightmapState(LIGHTMAP)

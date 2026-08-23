@@ -168,22 +168,24 @@ public class ItemCreativeUnlocker extends Item implements MediaHolderItem {
     }
 
     private void debugDisplay(ItemStack stack, DataComponentType<List<Long>> type, String langKey, String allKey, Entity entity) {
-        var list = stack.get(type);
-        if (list != null) {
-            stack.remove(type);
-            for (long i : list) {
-                if (i < 0) {
-                    entity.sendSystemMessage(Component.translatable("hexcasting.debug.media_" + langKey,
-                            stack.getDisplayName(),
-                            Component.translatable("hexcasting.debug." + allKey).withStyle(ChatFormatting.GRAY))
-                        .withStyle(ChatFormatting.LIGHT_PURPLE));
-                } else {
-                    entity.sendSystemMessage(Component.translatable("hexcasting.debug.media_" + langKey + ".with_dust",
-                            stack.getDisplayName(),
-                            Component.literal("" + i).withStyle(ChatFormatting.WHITE),
-                            Component.literal(String.format("%.2f", i * 1.0 / MediaConstants.DUST_UNIT)).withStyle(
-                                ChatFormatting.WHITE))
-                        .withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (entity instanceof ServerPlayer player) {
+            var list = stack.get(type);
+            if (list != null) {
+                stack.remove(type);
+                for (long i : list) {
+                    if (i < 0) {
+                        player.sendSystemMessage(Component.translatable("hexcasting.debug.media_" + langKey,
+                                        stack.getDisplayName(),
+                                        Component.translatable("hexcasting.debug." + allKey).withStyle(ChatFormatting.GRAY))
+                                .withStyle(ChatFormatting.LIGHT_PURPLE));
+                    } else {
+                        player.sendSystemMessage(Component.translatable("hexcasting.debug.media_" + langKey + ".with_dust",
+                                        stack.getDisplayName(),
+                                        Component.literal("" + i).withStyle(ChatFormatting.WHITE),
+                                        Component.literal(String.format("%.2f", i * 1.0 / MediaConstants.DUST_UNIT)).withStyle(
+                                                ChatFormatting.WHITE))
+                                .withStyle(ChatFormatting.LIGHT_PURPLE));
+                    }
                 }
             }
         }
@@ -196,7 +198,7 @@ public class ItemCreativeUnlocker extends Item implements MediaHolderItem {
             impetus.setInfiniteMedia();
             context.getLevel().playSound(null, context.getClickedPos(), HexSounds.SPELL_CIRCLE_FIND_BLOCK,
                 SoundSource.PLAYERS, 1f, 1f);
-            return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
+            return context.getLevel().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
     }

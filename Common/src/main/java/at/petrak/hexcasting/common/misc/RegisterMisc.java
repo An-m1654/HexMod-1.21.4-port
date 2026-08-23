@@ -1,7 +1,6 @@
 package at.petrak.hexcasting.common.misc;
 
 import at.petrak.hexcasting.api.HexAPI;
-import at.petrak.hexcasting.mixin.accessor.AccessorAbstractArrow;
 import at.petrak.hexcasting.mixin.accessor.AccessorVillager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -42,7 +41,7 @@ public class RegisterMisc {
     }
 
     private static Vec3 arrowVelocitizer(AbstractArrow arrow) {
-        if (((AccessorAbstractArrow) arrow).hex$isInGround()) {
+        if (arrow.isInGround()) {
             return Vec3.ZERO;
         } else {
             return arrow.getDeltaMovement();

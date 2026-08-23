@@ -5,6 +5,7 @@ import at.petrak.hexcasting.api.casting.eval.sideeffects.EvalSound;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.common.lib.hex.HexEvalSounds;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 
@@ -31,7 +32,7 @@ public class PackagedItemCastEnv extends PlayerBasedSpiralPatternCastEnv {
     }
 
     @Override
-    public long extractMediaEnvironment(long costLeft, boolean simulate) {
+    public long extractMediaEnvironment(ServerLevel level, long costLeft, boolean simulate) {
         if (this.caster.isCreative())
             return 0;
 
@@ -50,7 +51,7 @@ public class PackagedItemCastEnv extends PlayerBasedSpiralPatternCastEnv {
             costLeft -= extracted;
         }
         if (canCastFromInv && costLeft > 0) {
-            costLeft = this.extractMediaFromInventory(costLeft, this.canOvercast(), simulate);
+            costLeft = this.extractMediaFromInventory(level, costLeft, this.canOvercast(), simulate);
         }
 
         return costLeft;

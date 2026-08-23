@@ -1,0 +1,22 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/scroll_pristine_small"
+        },
+        "threshold": 0.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/scroll_ancient_small"
+        },
+        "threshold": 1.0
+      }
+    ],
+    "property": "hexcasting:ancient"
+  }
+}

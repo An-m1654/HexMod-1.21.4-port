@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.casting.ActionRegistryEntry
 import at.petrak.hexcasting.api.casting.iota.DoubleIota
 import at.petrak.hexcasting.api.item.HexHolderItem
 import at.petrak.hexcasting.api.item.IotaHolderItem
+import at.petrak.hexcasting.api.item.MediaHolderItem
 import at.petrak.hexcasting.api.item.PigmentItem
 import at.petrak.hexcasting.api.item.VariantItem
 import at.petrak.hexcasting.api.misc.MediaConstants
@@ -269,6 +270,11 @@ object FabricHexInitializer : ModInitializer {
             if (item is VariantItem) {
                 HexCardinalComponents.VARIANT_ITEM_LOOKUP.registerForItems({
                     item, _ -> CCVariantItem.ItemBased(item);
+                }, item)
+            }
+            if (item is MediaHolderItem) {
+                HexCardinalComponents.MEDIA_HOLDER_LOOKUP.registerForItems({
+                        item, _ -> CCMediaHolder.ItemBased(item);
                 }, item)
             }
         }

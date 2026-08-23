@@ -1,0 +1,29 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/staff/acacia"
+        },
+        "threshold": 0.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/staff/old"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "hexcasting:item/staff/cherry"
+        },
+        "threshold": 2.0
+      }
+    ],
+    "property": "hexcasting:funny_level"
+  }
+}

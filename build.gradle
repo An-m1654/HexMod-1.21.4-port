@@ -1,11 +1,11 @@
-import at.petrak.pkpcpbp.MiscUtil
+//import at.petrak.pkpcpbp.MiscUtil
 
 plugins {
     // used for something??
-    id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.17-SNAPSHOT' apply false
     // used for multi-loader stuff, NOT for the archi API
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.gradleup.shadow' version '8.3.6' apply false
+    id 'architectury-plugin' version '3.5-SNAPSHOT'
+    id 'com.gradleup.shadow' version '9.5.1' apply false
 
     id "org.jetbrains.kotlin.jvm"
     id 'idea'
@@ -15,8 +15,8 @@ plugins {
     id 'fabric-loom' version '1.9+' apply false
 
     id("at.petra-k.pkpcpbp.PKPlugin") version "0.2.0-pre-104"
-    id("at.petra-k.pkpcpbp.PKSubprojPlugin") version "0.2.0-pre-104" apply false
-    id("at.petra-k.pkpcpbp.PKJson5Plugin") version "0.2.0-pre-104" apply false
+//    id("at.petra-k.pkpcpbp.PKSubprojPlugin") version "0.2.0-pre-104" apply false
+//    id("at.petra-k.pkpcpbp.PKJson5Plugin") version "0.2.0-pre-104" apply false
 }
 
 architectury {
@@ -54,29 +54,30 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
     apply plugin: 'maven-publish'
-    apply plugin: 'at.petra-k.pkpcpbp.PKSubprojPlugin'
-    apply plugin: 'at.petra-k.pkpcpbp.PKJson5Plugin'
+    apply plugin: 'com.gradleup.shadow'
+//    apply plugin: 'at.petra-k.pkpcpbp.PKSubprojPlugin'
+//    apply plugin: 'at.petra-k.pkpcpbp.PKJson5Plugin'
 
     group = "at.petra-k.$modID"
     base.archivesName = "$modID-$platform-$minecraftVersion"
     version = modVersion
 
-    def isRelease = MiscUtil.isRelease(MiscUtil.getMostRecentPush(project))
-    def buildNumber = System.getenv("BUILD_NUMBER")
-    if (!isRelease && buildNumber != null) {
-        version += "-pre-$buildNumber"
-    }
+//    def isRelease = MiscUtil.isRelease(MiscUtil.getMostRecentPush(project))
+//    def buildNumber = System.getenv("BUILD_NUMBER")
+//    if (!isRelease && buildNumber != null) {
+//        version += "-pre-$buildNumber"
+//    }
 
-    pkSubproj {
-        platform = project.platform
-        artifactId = base.archivesName.get()
-        versionDisplayName = "$platform-$minecraftVersion-$modVersion"
-    }
-
-    pkJson5 {
-        autoProcessJson5 = true
-        autoProcessJson5Flattening = true
-    }
+//    pkSubproj {
+//        platform = project.platform
+//        artifactId = base.archivesName.get()
+//        versionDisplayName = "$platform-$minecraftVersion-$modVersion"
+//    }
+//
+//    pkJson5 {
+//        autoProcessJson5 = true
+//        autoProcessJson5Flattening = true
+//    }
 
     loom {
         silentMojangMappingsLicense() // heroes in a half-shell
@@ -150,7 +151,7 @@ allprojects {
 }
 
 tasks.register("runAllDatagen") {
-    dependsOn ":Neoforge:runXplatDatagen"
-    dependsOn ":Neoforge:runDatagen"
+//    dependsOn ":Neoforge:runXplatDatagen"
+//    dependsOn ":Neoforge:runDatagen"
     dependsOn ":Fabric:runDatagen"
 }

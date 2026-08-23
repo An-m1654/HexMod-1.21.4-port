@@ -86,8 +86,7 @@ public class BlockConjured extends Block implements EntityBlock, IForgeLikeBlock
     }
 
     @Override
-    public boolean propagatesSkylightDown(@NotNull BlockState pState, @NotNull BlockGetter pLevel,
-        @NotNull BlockPos pPos) {
+    public boolean propagatesSkylightDown(@NotNull BlockState pState) {
         return true;
     }
 

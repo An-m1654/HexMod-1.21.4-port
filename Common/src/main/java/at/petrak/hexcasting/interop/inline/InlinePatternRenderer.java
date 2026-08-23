@@ -70,7 +70,7 @@ public class InlinePatternRenderer implements InlineRenderer<InlinePatternData> 
         boolean isFlat = InlineRenderer.isFlat(drawContext.pose(), trContext.layerType());
 
         Matrix3f normalMatrix = drawContext.pose().last().normal();
-        PatternRenderer.renderPattern(data.pattern, drawContext.pose(), isFlat ? null : new PatternRenderer.WorldlyBits(drawContext.bufferSource(), trContext.light(), new Vec3(0, 0, 1)),
+        PatternRenderer.renderPattern(data.pattern, drawContext.pose(), isFlat ? null : new PatternRenderer.WorldlyBits(drawContext.bufferSource, trContext.light(), new Vec3(0, 0, 1)),
                 isGlowy ? INLINE_SETTINGS_GLOWY : INLINE_SETTINGS,
                 isGlowy ? new PatternColors(color, 0xFF_000000 | glowyParentColor) : PatternColors.singleStroke(color),
                 0, INLINE_TEXTURE_RES);

@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.addldata.ADMediaHolder
 import at.petrak.hexcasting.api.misc.DiscoveryHandlers
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.util.ARGB
 import net.minecraft.util.Mth
 import net.minecraft.world.item.ItemStack
 import kotlin.math.roundToInt
@@ -99,7 +100,7 @@ fun mediaBarColor(media: Long, maxMedia: Long): Int {
     val r = Mth.lerp(amt, 84f, 254f)
     val g = Mth.lerp(amt, 57f, 203f)
     val b = Mth.lerp(amt, 138f, 230f)
-    return Mth.color(r / 255f, g / 255f, b / 255f)
+    return ARGB.colorFromFloat(r / 255f, g / 255f, b / 255f, 1f)
 }
 
 fun mediaBarWidth(media: Long, maxMedia: Long): Int {

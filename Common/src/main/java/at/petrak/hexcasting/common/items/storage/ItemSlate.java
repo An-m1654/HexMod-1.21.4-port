@@ -26,7 +26,7 @@ import java.util.Optional;
 import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
 public class ItemSlate extends BlockItem implements IotaHolderItem {
-    public static final ResourceLocation WRITTEN_PRED = modLoc("written");
+    public static final ResourceLocation WRITTEN_PRED = modLoc("item_slate_written");
 
     public ItemSlate(Block pBlock, Properties pProperties) {
         super(pBlock, pProperties);

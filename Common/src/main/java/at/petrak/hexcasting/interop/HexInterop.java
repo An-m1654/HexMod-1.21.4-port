@@ -20,7 +20,7 @@ public class HexInterop {
     }
 
     public static final class Fabric {
-        public static final String ACCESSORIES_API_ID = "accessories";
+        public static final String TRINKETS_API_ID = "trinkets";
     }
 
     public static void init() {
@@ -51,6 +51,9 @@ public class HexInterop {
                 break;
             }
         }
+
+        // Because PEHKUI is not needed anymore, anyInterop can just be set to true (to keep the original document's location)
+        anyInterop = true;
 
         if (!anyInterop) {
             List<String> platformSpecificIntegrations;

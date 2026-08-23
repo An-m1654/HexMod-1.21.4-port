@@ -21,7 +21,7 @@ object OpCoerceToAxial : ConstMediaAction {
             if (vec == Vec3.ZERO)
                 vec.asActionResult
             else
-                Vec3.atLowerCornerOf(Direction.getNearest(vec.x, vec.y, vec.z).normal).asActionResult
+                Vec3.atLowerCornerOf(Direction.getApproximateNearest(vec.x, vec.y, vec.z).unitVec3i).asActionResult
         })
     }
 }

@@ -14,7 +14,7 @@ class MishapNotEnoughMedia(private val cost: Long) : Mishap() {
     override fun resolutionType(ctx: CastingEnvironment) = ResolvedPatternType.ERRORED
 
     override fun execute(env: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
-        env.extractMedia(cost, false)
+        env.extractMedia(env.world, cost, false)
     }
 
     override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context) = "hexcasting.message.cant_overcast".asTranslatedComponent

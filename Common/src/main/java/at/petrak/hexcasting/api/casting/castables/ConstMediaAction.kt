@@ -38,7 +38,7 @@ interface ConstMediaAction : Action {
         val result = this.executeWithOpCount(args, env)
         stack.addAll(result.resultStack)
 
-        if (env.extractMedia(this.mediaCost, true) > 0)
+        if (env.extractMedia(env.world, this.mediaCost, true) > 0)
             throw MishapNotEnoughMedia(this.mediaCost)
 
         val sideEffects = mutableListOf<OperatorSideEffect>(OperatorSideEffect.ConsumeMedia(this.mediaCost))

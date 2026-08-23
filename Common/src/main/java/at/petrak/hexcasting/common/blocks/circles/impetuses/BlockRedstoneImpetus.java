@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +57,7 @@ public class BlockRedstoneImpetus extends BlockAbstractImpetus {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level instanceof ServerLevel sLevel
                 && level.getBlockEntity(pos) instanceof BlockEntityRedstoneImpetus tile) {
             var usedStack = player.getItemInHand(hand);
@@ -64,7 +65,7 @@ public class BlockRedstoneImpetus extends BlockAbstractImpetus {
                 tile.clearPlayer();
                 tile.sync();
                 level.playSound(null, pos, HexSounds.IMPETUS_REDSTONE_CLEAR, SoundSource.BLOCKS, 1f, 1f);
-                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             } else {
                 var datumContainer = IXplatAbstractions.INSTANCE.findDataHolder(usedStack);
                 if (datumContainer != null) {
@@ -78,16 +79,17 @@ public class BlockRedstoneImpetus extends BlockAbstractImpetus {
 
                             level.playSound(null, pos, HexSounds.IMPETUS_REDSTONE_DING,
                                     SoundSource.BLOCKS, 1f, 1f);
-                            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                            return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
                         }
                     }
                 }
             }
         }
 
-        return stack.isEmpty() && hand == InteractionHand.MAIN_HAND
-                ? ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+//        return stack.isEmpty() && hand == InteractionHand.MAIN_HAND
+//                ? InteractionResult.PASS
+//                : InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -99,9 +101,9 @@ public class BlockRedstoneImpetus extends BlockAbstractImpetus {
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos,
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, Orientation pOrientation,
         boolean pIsMoving) {
-        super.neighborChanged(pState, pLevel, pPos, pBlock, pFromPos, pIsMoving);
+        super.neighborChanged(pState, pLevel, pPos, pBlock, pOrientation, pIsMoving);
 
         if (pLevel instanceof ServerLevel slevel) {
             boolean prevPowered = pState.getValue(POWERED);

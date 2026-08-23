@@ -25,7 +25,7 @@ import at.petrak.hexcasting.common.lib.HexRegistries;
 import at.petrak.hexcasting.common.recipe.ingredient.brainsweep.BrainsweepeeIngredientType;
 import at.petrak.hexcasting.common.recipe.ingredient.state.StateIngredientType;
 import at.petrak.hexcasting.fabric.cc.HexCardinalComponents;
-import at.petrak.hexcasting.fabric.interop.accessories.AccessoriesApiInterop;
+import at.petrak.hexcasting.fabric.interop.trinkets.TrinketsApiInterop;
 import at.petrak.hexcasting.fabric.recipe.FabricUnsealedIngredient;
 import at.petrak.hexcasting.interop.HexInterop;
 import at.petrak.hexcasting.interop.pehkui.PehkuiInterop;
@@ -35,6 +35,8 @@ import at.petrak.hexcasting.xplat.IXplatTags;
 import at.petrak.hexcasting.xplat.Platform;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Lifecycle;
+import dev.emi.trinkets.TrinketSlot;
+import dev.emi.trinkets.api.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -59,33 +61,36 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.function.TriFunction;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
-import virtuoel.pehkui.api.ScaleTypes;
+import vazkii.patchouli.fabric.network.FabricAskForRecipes;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -109,8 +114,8 @@ public class FabricXplatImpl implements IXplatAbstractions {
 
     @Override
     public void initPlatformSpecific() {
-        if (this.isModPresent(HexInterop.Fabric.ACCESSORIES_API_ID)) {
-            AccessoriesApiInterop.init();
+        if (this.isModPresent(HexInterop.Fabric.TRINKETS_API_ID)) {
+            TrinketsApiInterop.init();
         }
     }
 
@@ -344,7 +349,7 @@ public class FabricXplatImpl implements IXplatAbstractions {
     );
 
     @Override
-    public boolean isCorrectTierForDrops(Tier tier, BlockState bs) {
+    public boolean isCorrectTierForDrops(ToolMaterial tier, BlockState bs) {
         if (!bs.requiresCorrectToolForDrops()) {
             return true;
         }
@@ -365,6 +370,15 @@ public class FabricXplatImpl implements IXplatAbstractions {
         return new Item.Properties().equipmentSlot((e, s) -> slot);
     }
 
+    @Override
+    public Item.Properties addEquipSlotsFabric(EquipmentSlot... slots) {
+        Item.Properties prop = new Item.Properties();
+        for (EquipmentSlot slot : slots) {
+            prop = prop.equipmentSlot((e, s) -> slot);
+        }
+        return prop;
+    }
+
     private static final IXplatTags TAGS = new IXplatTags() {
         @Override
         public TagKey<Item> amethystDust() {
@@ -383,11 +397,14 @@ public class FabricXplatImpl implements IXplatAbstractions {
     }
 
     @Override
-    public LootItemCondition.Builder isShearsCondition() {
+    public LootItemCondition.Builder isShearsCondition(HolderLookup.RegistryLookup<Item> itemRegistryLookup) {
+
         return AnyOfCondition.anyOf(
-            MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS)),
+            MatchTool.toolMatches(ItemPredicate.Builder.item().of(itemRegistryLookup, Items.SHEARS)),
             MatchTool.toolMatches(ItemPredicate.Builder.item().of(
-                HexTags.Items.create(ResourceLocation.fromNamespaceAndPath("c", "shears"))))
+                    itemRegistryLookup,
+                    HexTags.Items.create(ResourceLocation.fromNamespaceAndPath("c", "shears")))
+            )
         );
     }
 
@@ -516,7 +533,12 @@ public class FabricXplatImpl implements IXplatAbstractions {
         player.setItemInHand(InteractionHand.MAIN_HAND, blockStack.copy());
         var success = UseItemCallback.EVENT.invoker().interact(player, world, InteractionHand.MAIN_HAND);
         player.setItemInHand(InteractionHand.MAIN_HAND, cached);
-        return success.getResult() == InteractionResult.PASS; // No other mod tried to consume this
+        return success == InteractionResult.PASS; // No other mod tried to consume this
+    }
+
+    @Override
+    public void askForRecipes() {
+        FabricAskForRecipes.ask();
     }
 
     @Override
@@ -524,28 +546,70 @@ public class FabricXplatImpl implements IXplatAbstractions {
         return new FabricRegister<>(registryKey);
     }
 
-    private static PehkuiInterop.ApiAbstraction PEHKUI_API = null;
+    @Override
+    public boolean accessoryModInstalled() {
+        return IXplatAbstractions.INSTANCE.isModPresent(HexInterop.Fabric.TRINKETS_API_ID);
+    }
 
     @Override
-    public PehkuiInterop.ApiAbstraction getPehkuiApi() {
-        if (!this.isModPresent(HexInterop.PEHKUI_ID)) {
-            throw new IllegalArgumentException("cannot get the pehkui api without pehkui");
-        }
-
-        if (PEHKUI_API == null) {
-            PEHKUI_API = new PehkuiInterop.ApiAbstraction() {
-                @Override
-                public float getScale(Entity e) {
-                    return ScaleTypes.BASE.getScaleData(e).getScale();
-                }
-
-                @Override
-                public void setScale(Entity e, float scale) {
-                    ScaleTypes.BASE.getScaleData(e).setScale(scale);
-                }
-            };
-        }
-        return PEHKUI_API;
+    public InteractionResult customUseCode(Level level, Player player, InteractionHand hand, TriFunction<Level, Player, InteractionHand, InteractionResult> originalFunc) {
+        ItemStack stack = player.getItemInHand(hand);
+        return equipItem(player, stack) ? InteractionResult.SUCCESS : originalFunc.apply(level, player, hand);
     }
+
+    public static boolean equipItem(LivingEntity user, ItemStack stack) {
+        Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(user);
+        if (optional.isPresent()) {
+            TrinketComponent comp = optional.get();
+            for(Map<String, TrinketInventory> group : comp.getInventory().values()) {
+                for(TrinketInventory inv : group.values()) {
+                    for(int i = 0; i < inv.getContainerSize(); ++i) {
+                        if (inv.getItem(i).isEmpty()) {
+                            SlotReference ref = new SlotReference(inv, i);
+                            if (TrinketSlot.canInsert(stack, ref, user)) {
+                                ItemStack newStack = stack.copy();
+                                inv.setItem(i, newStack);
+                                Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
+                                Holder<SoundEvent> soundEvent = trinket.getEquipSound(stack, ref, user);
+                                if (!stack.isEmpty() && soundEvent != null) {
+                                    user.gameEvent(GameEvent.EQUIP);
+                                    user.playSound(soundEvent.value(), 1.0F, 1.0F);
+                                }
+
+                                stack.setCount(0);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+//    private static PehkuiInterop.ApiAbstraction PEHKUI_API = null;
+
+//    @Override
+//    public PehkuiInterop.ApiAbstraction getPehkuiApi() {
+//        if (!this.isModPresent(HexInterop.PEHKUI_ID)) {
+//            throw new IllegalArgumentException("cannot get the pehkui api without pehkui");
+//        }
+//
+//        if (PEHKUI_API == null) {
+//            PEHKUI_API = new PehkuiInterop.ApiAbstraction() {
+//                @Override
+//                public float getScale(Entity e) {
+//                    return ScaleTypes.BASE.getScaleData(e).getScale();
+//                }
+//
+//                @Override
+//                public void setScale(Entity e, float scale) {
+//                    ScaleTypes.BASE.getScaleData(e).setScale(scale);
+//                }
+//            };
+//        }
+//        return PEHKUI_API;
+//    }
 
 }

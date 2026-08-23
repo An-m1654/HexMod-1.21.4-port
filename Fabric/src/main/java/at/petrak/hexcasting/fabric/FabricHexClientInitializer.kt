@@ -3,6 +3,7 @@ package at.petrak.hexcasting.fabric
 import at.petrak.hexcasting.client.ClientTickCounter
 import at.petrak.hexcasting.client.Keybinds
 import at.petrak.hexcasting.client.RegisterClientStuff
+import at.petrak.hexcasting.client.RegisterClientStuff.QUENCHED_ALLAY_TYPES
 import at.petrak.hexcasting.client.ShiftScrollListener
 import at.petrak.hexcasting.client.gui.PatternTooltipComponent
 import at.petrak.hexcasting.client.model.HexModelLayers
@@ -19,13 +20,17 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.*
+import net.minecraft.client.color.item.ItemTintSource
+import net.minecraft.client.color.item.ItemTintSources
 import net.minecraft.client.particle.ParticleProvider
 import net.minecraft.client.particle.SpriteSet
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
+import vazkii.patchouli.fabric.network.FabricAskForRecipes
 import java.util.function.Function
 
 object FabricHexClientInitializer : ClientModInitializer {
@@ -77,10 +82,9 @@ object FabricHexClientInitializer : ClientModInitializer {
 
         HexInterop.clientInit()
         RegisterClientStuff.registerColorProviders(
-            { colorizer, item -> ColorProviderRegistry.ITEM.register(colorizer, item) },
             { colorizer, block -> ColorProviderRegistry.BLOCK.register(colorizer, block) })
-        ModelLoadingPlugin.register {
-            context -> RegisterClientStuff.onModelRegister {
+        ModelLoadingPlugin.register { context ->
+            RegisterClientStuff.onModelRegister {
                 id -> context.addModels(id)
             }
         }

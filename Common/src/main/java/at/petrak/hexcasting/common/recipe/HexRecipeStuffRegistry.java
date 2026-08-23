@@ -3,6 +3,7 @@ package at.petrak.hexcasting.common.recipe;
 import at.petrak.hexcasting.api.HexAPI;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -28,7 +29,7 @@ public class HexRecipeStuffRegistry {
     private static final Map<ResourceLocation, RecipeSerializer<?>> SERIALIZERS = new LinkedHashMap<>();
     private static final Map<ResourceLocation, RecipeType<?>> TYPES = new LinkedHashMap<>();
 
-    public static final RecipeSerializer<?> BRAINSWEEP = registerSerializer("brainsweep",
+    public static final RecipeSerializer<? extends Recipe<RecipeInput>> BRAINSWEEP = registerSerializer("brainsweep",
         new BrainsweepRecipe.Serializer());
     public static final RecipeSerializer<SealThingsRecipe> SEAL_FOCUS = registerSerializer(
         "seal_focus", SealThingsRecipe.FOCUS_SERIALIZER);

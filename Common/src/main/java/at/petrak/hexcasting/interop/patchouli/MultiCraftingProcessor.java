@@ -9,20 +9,20 @@
 package at.petrak.hexcasting.interop.patchouli;
 
 import at.petrak.hexcasting.api.HexAPI;
+import at.petrak.hexcasting.common.lib.HexItems;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.text.html.Option;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultiCraftingProcessor implements IComponentProcessor {
@@ -36,14 +36,14 @@ public class MultiCraftingProcessor implements IComponentProcessor {
         List<String> names = vars.get("recipes", level.registryAccess()).asStream(level.registryAccess()).map(IVariable::asString).toList();
         this.recipes = new ArrayList<>();
         for (String name : names) {
-            CraftingRecipe recipe = PatchouliUtils.getRecipe(RecipeType.CRAFTING, ResourceLocation.parse(name));
+            CraftingRecipe recipe = PatchouliUtils.getRecipe(level, RecipeType.CRAFTING, ResourceLocation.parse(name));
             if (recipe != null) {
                 recipes.add(recipe);
                 if (shapeless) {
                     shapeless = !(recipe instanceof ShapedRecipe);
                 }
-                for (Ingredient ingredient : recipe.getIngredients()) {
-                    int size = ingredient.getItems().length;
+                for (Ingredient ingredient : recipe.placementInfo().ingredients()) {
+                    int size = ingredient.items().toArray().length;
                     if (longestIngredientSize < size) {
                         longestIngredientSize = size;
                     }
@@ -62,7 +62,8 @@ public class MultiCraftingProcessor implements IComponentProcessor {
         }
         if (key.equals("heading")) {
             if (!hasCustomHeading) {
-                return IVariable.from(recipes.getFirst().getResultItem(level.registryAccess()).getHoverName(), level.registryAccess());
+//                    return IVariable.from(recipes.getFirst().getResultItem(level.registryAccess()).getHoverName(), level.registryAccess());
+                return IVariable.from(recipes.getFirst().assemble(CraftingInput.EMPTY, level.registryAccess()).getHoverName(), level.registryAccess());
             }
             return null;
         }
@@ -70,20 +71,21 @@ public class MultiCraftingProcessor implements IComponentProcessor {
             int index = Integer.parseInt(key.substring(5)) - 1;
             int shapedX = index % 3;
             int shapedY = index / 3;
-            List<Ingredient> ingredients = new ArrayList<>();
+            List<Optional<Ingredient>> ingredients = new ArrayList<>();
             for (CraftingRecipe recipe : recipes) {
                 if (recipe instanceof ShapedRecipe shaped) {
                     if (shaped.getWidth() < shapedX + 1) {
-                        ingredients.add(Ingredient.EMPTY);
+                        ingredients.add(Optional.empty());
                     } else {
                         int realIndex = index - (shapedY * (3 - shaped.getWidth()));
-                        NonNullList<Ingredient> list = recipe.getIngredients();
-                        ingredients.add(list.size() > realIndex ? list.get(realIndex) : Ingredient.EMPTY);
+                        List<Integer> locationsList = recipe.placementInfo().slotsToIngredientIndex();
+                        List<Optional<Ingredient>> list = locationsList.stream().map(i -> i == -1 ? (Optional.<Ingredient>empty()) : Optional.of(recipe.placementInfo().ingredients().get(i))).toList();
+                        ingredients.add(list.size() > realIndex ? list.get(realIndex) : Optional.empty());
                     }
 
                 } else {
-                    NonNullList<Ingredient> list = recipe.getIngredients();
-                    ingredients.add(list.size() > index ? list.get(index) : Ingredient.EMPTY);
+                    List<Ingredient> list = recipe.placementInfo().ingredients();
+                    ingredients.add(list.size() > index ? Optional.of(list.get(index)) : Optional.empty());
                 }
             }
             return PatchouliUtils.interweaveIngredients(ingredients, longestIngredientSize, level.registryAccess());
@@ -91,7 +93,7 @@ public class MultiCraftingProcessor implements IComponentProcessor {
         if (key.equals("output")) {
             return IVariable.wrapList(
                 recipes.stream()
-                        .map(recipe -> recipe.getResultItem(level.registryAccess()))
+                        .map(recipe -> recipe.assemble(CraftingInput.EMPTY, level.registryAccess()))
                         .map(v -> IVariable.from(v, level.registryAccess()))
                         .collect(Collectors.toList()), level.registryAccess());
         }

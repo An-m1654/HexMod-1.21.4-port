@@ -18,6 +18,8 @@ import at.petrak.hexcasting.common.blocks.circles.impetuses.BlockRedstoneImpetus
 import at.petrak.hexcasting.common.blocks.circles.impetuses.BlockRightClickImpetus;
 import at.petrak.hexcasting.common.blocks.decoration.*;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.world.entity.EntityType;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
@@ -49,7 +52,7 @@ public class HexBlocks {
 
     public static void registerBlockItems(BiConsumer<Item, ResourceLocation> r) {
         for (var e : BLOCK_ITEMS.entrySet()) {
-            r.accept(new BlockItem(e.getValue().getFirst(), e.getValue().getSecond()), e.getKey());
+            r.accept(new BlockItem(e.getValue().getFirst(), e.getValue().getSecond().setId(ResourceKey.create(Registries.ITEM, e.getKey()))), e.getKey());
         }
     }
 
@@ -137,7 +140,9 @@ public class HexBlocks {
                 .pushReaction(PushReaction.DESTROY)
                 .noCollission()
                 .isSuffocating(HexBlocks::never)
-                .isViewBlocking(HexBlocks::never)),
+                .isViewBlocking(HexBlocks::never)
+                .setId(getId("conjured_light"))
+        ),
         new Item.Properties());
     public static final Block CONJURED_BLOCK = blockItem("conjured_block",
         new BlockConjured(
@@ -150,149 +155,171 @@ public class HexBlocks {
                 .instabreak()
                 .noOcclusion()
                 .isSuffocating(HexBlocks::never)
-                .isViewBlocking(HexBlocks::never)),
+                .isViewBlocking(HexBlocks::never)
+                .setId(getId("conjured_block"))
+        ),
         new Item.Properties());
 
     // "no" item because we add it manually
     public static final BlockSlate SLATE = blockNoItem("slate",
         new BlockSlate(slateish()
-            .pushReaction(PushReaction.DESTROY)));
+            .pushReaction(PushReaction.DESTROY)
+            .setId(getId("slate"))
+        ));
 
     public static final BlockEmptyImpetus IMPETUS_EMPTY = blockItem("impetus/empty",
         new BlockEmptyImpetus(slateish()
-            .pushReaction(PushReaction.BLOCK)));
+            .pushReaction(PushReaction.BLOCK)
+            .setId(getId("impetus/empty"))
+        ));
     public static final BlockRightClickImpetus IMPETUS_RIGHTCLICK = blockItem("impetus/rightclick",
         new BlockRightClickImpetus(slateish()
             .pushReaction(PushReaction.BLOCK)
-            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)),
+            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)
+            .setId(getId("impetus/rightclick"))
+        ),
         HexItems.props().rarity(Rarity.UNCOMMON));
     public static final BlockLookingImpetus IMPETUS_LOOK = blockItem("impetus/look",
         new BlockLookingImpetus(slateish()
             .pushReaction(PushReaction.BLOCK)
-            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)),
+            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)
+            .setId(getId("impetus/look"))
+        ),
         HexItems.props().rarity(Rarity.UNCOMMON));
     public static final BlockRedstoneImpetus IMPETUS_REDSTONE = blockItem("impetus/redstone",
         new BlockRedstoneImpetus(slateish()
             .pushReaction(PushReaction.BLOCK)
-            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)),
+            .lightLevel(bs -> bs.getValue(BlockAbstractImpetus.ENERGIZED) ? 15 : 0)
+            .setId(getId("impetus/redstone"))
+        ),
         HexItems.props().rarity(Rarity.UNCOMMON));
 
 
     public static final BlockEmptyDirectrix EMPTY_DIRECTRIX = blockItem("directrix/empty",
         new BlockEmptyDirectrix(slateish()
-            .pushReaction(PushReaction.BLOCK)));
+            .pushReaction(PushReaction.BLOCK)
+            .setId(getId("directrix/empty"))
+        ));
     public static final BlockRedstoneDirectrix DIRECTRIX_REDSTONE = blockItem("directrix/redstone",
         new BlockRedstoneDirectrix(slateish()
-            .pushReaction(PushReaction.BLOCK)),
+            .pushReaction(PushReaction.BLOCK)
+            .setId(getId("directrix/redstone"))
+        ),
         HexItems.props().rarity(Rarity.UNCOMMON));
     public static final BlockBooleanDirectrix DIRECTRIX_BOOLEAN = blockItem("directrix/boolean",
         new BlockBooleanDirectrix(slateish()
-            .pushReaction(PushReaction.BLOCK)),
+            .pushReaction(PushReaction.BLOCK)
+            .setId(getId("directrix/boolean"))
+        ),
         HexItems.props().rarity(Rarity.UNCOMMON));
 
     public static final BlockAkashicRecord AKASHIC_RECORD = blockItem("akashic_record",
-        new BlockAkashicRecord(akashicWoodyHard().lightLevel(bs -> 15)),
+        new BlockAkashicRecord(akashicWoodyHard().lightLevel(bs -> 15).setId(getId("akashic_record"))),
         HexItems.props().rarity(Rarity.RARE)
     );
     public static final BlockAkashicBookshelf AKASHIC_BOOKSHELF = blockItem("akashic_bookshelf",
         new BlockAkashicBookshelf(akashicWoodyHard()
-            .lightLevel(bs -> (bs.getValue(BlockAkashicBookshelf.HAS_BOOKS)) ? 4 : 0)));
+            .lightLevel(bs -> (bs.getValue(BlockAkashicBookshelf.HAS_BOOKS)) ? 4 : 0)
+            .setId(getId("akashic_bookshelf"))
+        ));
     public static final BlockAkashicLigature AKASHIC_LIGATURE = blockItem("akashic_ligature",
-        new BlockAkashicLigature(akashicWoodyHard().lightLevel(bs -> 4)));
+        new BlockAkashicLigature(akashicWoodyHard().lightLevel(bs -> 4).setId(getId("akashic_ligature"))));
 
     public static final BlockQuenchedAllay QUENCHED_ALLAY = blockItem("quenched_allay", 
-        new BlockQuenchedAllay(quenched()), 
+        new BlockQuenchedAllay(quenched().setId(getId("quenched_allay"))), 
         HexItems.props().rarity(Rarity.UNCOMMON)
     );
 
     // Decoration?!
-    public static final BlockQuenchedAllay QUENCHED_ALLAY_TILES = blockItem("quenched_allay_tiles", new BlockQuenchedAllay(quenched()));
-    public static final BlockQuenchedAllay QUENCHED_ALLAY_BRICKS = blockItem("quenched_allay_bricks", new BlockQuenchedAllay(quenched()));
-    public static final BlockQuenchedAllay QUENCHED_ALLAY_BRICKS_SMALL = blockItem("quenched_allay_bricks_small", new BlockQuenchedAllay(quenched()));
-    public static final Block SLATE_BLOCK = blockItem("slate_block", new Block(slateish().strength(2f, 4f)));
-    public static final Block SLATE_TILES = blockItem("slate_tiles", new Block(slateish().strength(2f, 4f)));
-    public static final Block SLATE_BRICKS = blockItem("slate_bricks", new Block(slateish().strength(2f, 4f)));
-    public static final Block SLATE_BRICKS_SMALL = blockItem("slate_bricks_small", new Block(slateish().strength(2f, 4f)));
-    public static final RotatedPillarBlock SLATE_PILLAR = blockItem("slate_pillar", new RotatedPillarBlock(slateish().strength(2f, 4f)));
+    public static final BlockQuenchedAllay QUENCHED_ALLAY_TILES = blockItem("quenched_allay_tiles", new BlockQuenchedAllay(quenched().setId(getId("quenched_allay_tiles"))));
+    public static final BlockQuenchedAllay QUENCHED_ALLAY_BRICKS = blockItem("quenched_allay_bricks", new BlockQuenchedAllay(quenched().setId(getId("quenched_allay_bricks"))));
+    public static final BlockQuenchedAllay QUENCHED_ALLAY_BRICKS_SMALL = blockItem("quenched_allay_bricks_small", new BlockQuenchedAllay(quenched().setId(getId("quenched_allay_bricks_small"))));
+    public static final Block SLATE_BLOCK = blockItem("slate_block", new Block(slateish().strength(2f, 4f).setId(getId("slate_block"))));
+    public static final Block SLATE_TILES = blockItem("slate_tiles", new Block(slateish().strength(2f, 4f).setId(getId("slate_tiles"))));
+    public static final Block SLATE_BRICKS = blockItem("slate_bricks", new Block(slateish().strength(2f, 4f).setId(getId("slate_bricks"))));
+    public static final Block SLATE_BRICKS_SMALL = blockItem("slate_bricks_small", new Block(slateish().strength(2f, 4f).setId(getId("slate_bricks_small"))));
+    public static final RotatedPillarBlock SLATE_PILLAR = blockItem("slate_pillar", new RotatedPillarBlock(slateish().strength(2f, 4f).setId(getId("slate_pillar"))));
     public static final ColoredFallingBlock AMETHYST_DUST_BLOCK = blockItem("amethyst_dust_block",
         new ColoredFallingBlock(new ColorRGBA(0xb38ef3_ff), BlockBehaviour.Properties.ofFullCopy(Blocks.SAND).mapColor(MapColor.COLOR_PURPLE)
-            .strength(0.5f).sound(SoundType.SAND)));
+            .strength(0.5f).sound(SoundType.SAND).setId(getId("amethyst_dust_block"))));
     public static final AmethystBlock AMETHYST_TILES = blockItem("amethyst_tiles",
-        new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)));
+        new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).setId(getId("amethyst_tiles"))));
     public static final AmethystBlock AMETHYST_BRICKS = blockItem("amethyst_bricks",
-            new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)));
+            new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).setId(getId("amethyst_bricks"))));
     public static final AmethystBlock AMETHYST_BRICKS_SMALL = blockItem("amethyst_bricks_small",
-            new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)));
+            new AmethystBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).setId(getId("amethyst_bricks_small"))));
     public static final BlockAmethystDirectional AMETHYST_PILLAR = blockItem("amethyst_pillar",
-            new BlockAmethystDirectional(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)));
-    public static final Block SLATE_AMETHYST_TILES = blockItem("slate_amethyst_tiles", new Block(slateish().strength(2f, 4f)));
-    public static final Block SLATE_AMETHYST_BRICKS = blockItem("slate_amethyst_bricks", new Block(slateish().strength(2f, 4f)));
-    public static final Block SLATE_AMETHYST_BRICKS_SMALL = blockItem("slate_amethyst_bricks_small", new Block(slateish().strength(2f, 4f)));
+            new BlockAmethystDirectional(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).setId(getId("amethyst_pillar"))));
+    public static final Block SLATE_AMETHYST_TILES = blockItem("slate_amethyst_tiles", new Block(slateish().strength(2f, 4f).setId(getId("slate_amethyst_tiles"))));
+    public static final Block SLATE_AMETHYST_BRICKS = blockItem("slate_amethyst_bricks", new Block(slateish().strength(2f, 4f).setId(getId("slate_amethyst_bricks"))));
+    public static final Block SLATE_AMETHYST_BRICKS_SMALL = blockItem("slate_amethyst_bricks_small", new Block(slateish().strength(2f, 4f).setId(getId("slate_amethyst_bricks_small"))));
     public static final RotatedPillarBlock SLATE_AMETHYST_PILLAR = blockItem("slate_amethyst_pillar",
-            new RotatedPillarBlock(slateish().strength(2f, 4f)));
+            new RotatedPillarBlock(slateish().strength(2f, 4f).setId(getId("slate_amethyst_pillar"))));
     public static final Block SCROLL_PAPER = blockItem("scroll_paper",
-        new BlockFlammable(papery(MapColor.TERRACOTTA_WHITE), 100, 60));
+        new BlockFlammable(papery(MapColor.TERRACOTTA_WHITE).setId(getId("scroll_paper")), 100, 60));
     public static final Block ANCIENT_SCROLL_PAPER = blockItem("ancient_scroll_paper",
-        new BlockFlammable(papery(MapColor.TERRACOTTA_ORANGE), 100, 60));
+        new BlockFlammable(papery(MapColor.TERRACOTTA_ORANGE).setId(getId("ancient_scroll_paper")), 100, 60));
     public static final Block SCROLL_PAPER_LANTERN = blockItem("scroll_paper_lantern",
-        new BlockFlammable(papery(MapColor.TERRACOTTA_WHITE).lightLevel($ -> 15), 100, 60));
+        new BlockFlammable(papery(MapColor.TERRACOTTA_WHITE).lightLevel($ -> 15).setId(getId("scroll_paper_lantern")), 100, 60));
     public static final Block ANCIENT_SCROLL_PAPER_LANTERN = blockItem(
         "ancient_scroll_paper_lantern",
-        new BlockFlammable(papery(MapColor.TERRACOTTA_ORANGE).lightLevel($ -> 12), 100, 60));
+        new BlockFlammable(papery(MapColor.TERRACOTTA_ORANGE).lightLevel($ -> 12).setId(getId("ancient_scroll_paper_lantern")), 100, 60));
     public static final BlockSconce SCONCE = blockItem("amethyst_sconce",
         new BlockSconce(BlockBehaviour.Properties.of()
             .mapColor(MapColor.COLOR_PURPLE)
             .sound(SoundType.AMETHYST)
             .strength(1f)
-            .lightLevel($ -> 15))
+            .lightLevel($ -> 15)
+            .setId(getId("amethyst_sconce"))
+        )
         );
 
     public static final BlockAkashicLog EDIFIED_LOG = blockItem("edified_log",
-        new BlockAkashicLog(edifiedWoody()));
+        new BlockAkashicLog(edifiedWoody().setId(getId("edified_log"))));
     public static final BlockAkashicLog EDIFIED_LOG_AMETHYST = blockItem("edified_log_amethyst",
-            new BlockAkashicLog(edifiedWoody()));
+            new BlockAkashicLog(edifiedWoody().setId(getId("edified_log_amethyst"))));
     public static final BlockAkashicLog EDIFIED_LOG_AVENTURINE = blockItem("edified_log_aventurine",
-            new BlockAkashicLog(edifiedWoody()));
+            new BlockAkashicLog(edifiedWoody().setId(getId("edified_log_aventurine"))));
     public static final BlockAkashicLog EDIFIED_LOG_CITRINE = blockItem("edified_log_citrine",
-            new BlockAkashicLog(edifiedWoody()));
+            new BlockAkashicLog(edifiedWoody().setId(getId("edified_log_citrine"))));
     public static final BlockAkashicLog EDIFIED_LOG_PURPLE = blockItem("edified_log_purple",
-            new BlockAkashicLog(edifiedWoody()));
+            new BlockAkashicLog(edifiedWoody().setId(getId("edified_log_purple"))));
     public static final BlockAkashicLog STRIPPED_EDIFIED_LOG = blockItem("stripped_edified_log",
-        new BlockAkashicLog(edifiedWoody()));
+        new BlockAkashicLog(edifiedWoody().setId(getId("stripped_edified_log"))));
     public static final BlockAkashicLog EDIFIED_WOOD = blockItem("edified_wood",
-        new BlockAkashicLog(edifiedWoody()));
+        new BlockAkashicLog(edifiedWoody().setId(getId("edified_wood"))));
     public static final BlockAkashicLog STRIPPED_EDIFIED_WOOD = blockItem("stripped_edified_wood",
-        new BlockAkashicLog(edifiedWoody()));
+        new BlockAkashicLog(edifiedWoody().setId(getId("stripped_edified_wood"))));
     public static final Block EDIFIED_PLANKS = blockItem("edified_planks",
-        new BlockFlammable(edifiedWoody(), 20, 5));
+        new BlockFlammable(edifiedWoody().setId(getId("edified_planks")), 20, 5));
     public static final Block EDIFIED_PANEL = blockItem("edified_panel",
-        new BlockFlammable(edifiedWoody(), 20, 5));
+        new BlockFlammable(edifiedWoody().setId(getId("edified_panel")), 20, 5));
     public static final Block EDIFIED_TILE = blockItem("edified_tile",
-        new BlockFlammable(edifiedWoody(), 20, 5));
+        new BlockFlammable(edifiedWoody().setId(getId("edified_tile")), 20, 5));
     public static final DoorBlock EDIFIED_DOOR = blockItem("edified_door",
-        new BlockHexDoor(edifiedWoody().noOcclusion()));
+        new BlockHexDoor(edifiedWoody().noOcclusion().setId(getId("edified_door"))));
     public static final TrapDoorBlock EDIFIED_TRAPDOOR = blockItem("edified_trapdoor",
-        new BlockHexTrapdoor(edifiedWoody().noOcclusion()));
+        new BlockHexTrapdoor(edifiedWoody().noOcclusion().setId(getId("edified_trapdoor"))));
     public static final StairBlock EDIFIED_STAIRS = blockItem("edified_stairs",
-        new BlockHexStairs(EDIFIED_PLANKS.defaultBlockState(), edifiedWoody().noOcclusion()));
-
+        new BlockHexStairs(EDIFIED_PLANKS.defaultBlockState(), edifiedWoody().noOcclusion().setId(getId("edified_stairs"))));
+//----
     public static final FenceBlock EDIFIED_FENCE = blockItem("edified_fence",
-            new BlockHexFence(edifiedWoody().noOcclusion()));
+            new BlockHexFence(edifiedWoody().noOcclusion().setId(getId("edified_fence"))));
     public static final FenceGateBlock EDIFIED_FENCE_GATE = blockItem("edified_fence_gate",
-            new BlockHexFenceGate(edifiedWoody().noOcclusion()));
+            new BlockHexFenceGate(edifiedWoody().noOcclusion().setId(getId("edified_fence_gate"))));
 
     public static final SlabBlock EDIFIED_SLAB = blockItem("edified_slab",
-        new BlockHexSlab(edifiedWoody().noOcclusion()));
+        new BlockHexSlab(edifiedWoody().noOcclusion().setId(getId("edified_slab"))));
     public static final ButtonBlock EDIFIED_BUTTON = blockItem("edified_button",
-        new BlockHexWoodButton(edifiedWoody().noOcclusion().noCollission()));
+        new BlockHexWoodButton(edifiedWoody().noOcclusion().noCollission().setId(getId("edified_button"))));
     public static final PressurePlateBlock EDIFIED_PRESSURE_PLATE = blockItem("edified_pressure_plate",
-        new BlockHexPressurePlate(edifiedWoody().noOcclusion().noCollission()));
+        new BlockHexPressurePlate(edifiedWoody().noOcclusion().noCollission().setId(getId("edified_pressure_plate"))));
     public static final BlockAkashicLeaves AMETHYST_EDIFIED_LEAVES = blockItem("amethyst_edified_leaves",
-        new BlockAkashicLeaves(leaves(MapColor.COLOR_PURPLE)));
+        new BlockAkashicLeaves(leaves(MapColor.COLOR_PURPLE).setId(getId("amethyst_edified_leaves"))));
     public static final BlockAkashicLeaves AVENTURINE_EDIFIED_LEAVES = blockItem("aventurine_edified_leaves",
-        new BlockAkashicLeaves(leaves(MapColor.COLOR_BLUE)));
+        new BlockAkashicLeaves(leaves(MapColor.COLOR_BLUE).setId(getId("aventurine_edified_leaves"))));
     public static final BlockAkashicLeaves CITRINE_EDIFIED_LEAVES = blockItem("citrine_edified_leaves",
-        new BlockAkashicLeaves(leaves(MapColor.COLOR_YELLOW)));
+        new BlockAkashicLeaves(leaves(MapColor.COLOR_YELLOW).setId(getId("citrine_edified_leaves"))));
 
     private static boolean never(Object... args) {
         return false;
@@ -326,6 +353,9 @@ public class HexBlocks {
             BLOCK_TABS.computeIfAbsent(tab, t -> new ArrayList<>()).add(block);
         }
         return block;
+    }
+    private static ResourceKey<Block> getId(String name) {
+        return ResourceKey.create(Registries.BLOCK, modLoc(name));
     }
 }
 

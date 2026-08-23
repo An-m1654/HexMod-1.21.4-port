@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MouseHandler.class)
 public class FabricMouseHandlerMixin {
-    @Inject(method = "onScroll", cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSpectator()Z"))
-    private void onScroll(long winptr, double xOff, double yOff, CallbackInfo ci, double delta) {
-        var cancel = MouseScrollCallback.EVENT.invoker().interact(delta);
+    @Inject(method = "onScroll", cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ScrollWheelHandler;onMouseScroll(DD)Lorg/joml/Vector2i;"))
+    private void onScroll(long winptr, double xOff, double yOff, CallbackInfo ci, boolean discreteScroll, double sensitivity, double scaledXOff, double scaledYOff) {
+        var cancel = MouseScrollCallback.EVENT.invoker().interact(scaledYOff);
         if (cancel) {
             ci.cancel();
         }

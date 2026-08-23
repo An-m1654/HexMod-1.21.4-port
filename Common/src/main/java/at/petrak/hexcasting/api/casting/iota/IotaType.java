@@ -28,7 +28,7 @@ public abstract class IotaType<T extends Iota> {
 
     /**
      * Get a {@link StreamCodec} associated with this datum.
-     * Is used for Client <-> Server communication.
+     * Is used for Client &lt;-&gt; Server communication.
      * <p>
      * It can be used with {@code TYPED_STREAM_CODEC} to deserde said datum with {@link RegistryFriendlyByteBuf}
      * @return {@link StreamCodec} of {@link IotaType}

@@ -5,11 +5,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -17,6 +20,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
@@ -44,7 +48,7 @@ public class FabricUnsealedIngredient extends Ingredient implements CustomIngred
     }
 
     protected FabricUnsealedIngredient(ItemStack stack) {
-        super(Arrays.stream(Ingredient.of(stack).values));
+        super(HolderSet.direct(stack.getItemHolder()));
         this.stack = stack;
     }
 
@@ -73,8 +77,8 @@ public class FabricUnsealedIngredient extends Ingredient implements CustomIngred
     }
 
     @Override
-    public List<ItemStack> getMatchingStacks() {
-        return List.of(stack);
+    public Stream<Holder<Item>> getMatchingItems() {
+        return Stream.of(stack.getItemHolder());
     }
 
     @Override
@@ -96,7 +100,7 @@ public class FabricUnsealedIngredient extends Ingredient implements CustomIngred
         }
 
         @Override
-        public MapCodec getCodec(boolean b) {
+        public MapCodec getCodec() {
             return CODEC;
         }
 

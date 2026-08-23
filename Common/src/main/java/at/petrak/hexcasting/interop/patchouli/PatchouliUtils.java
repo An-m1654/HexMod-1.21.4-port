@@ -1,15 +1,24 @@
 package at.petrak.hexcasting.interop.patchouli;
 
+import at.petrak.hexcasting.common.lib.HexItems;
+import at.petrak.hexcasting.xplat.IClientXplatAbstractions;
+import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
 import vazkii.patchouli.api.IVariable;
+import vazkii.patchouli.client.base.ClientRecipes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -20,16 +29,15 @@ import java.util.stream.Collectors;
  */
 public class PatchouliUtils {
     @SuppressWarnings("unchecked")
-    public static <T extends Recipe<I>, I extends RecipeInput> T getRecipe(RecipeType<T> type, ResourceLocation id) {
+    public static <T extends Recipe<I>, I extends RecipeInput> T getRecipe(Level level, RecipeType<T> type, ResourceLocation id) {
         // PageDoubleRecipeRegistry
-        if (Minecraft.getInstance().level == null) {
-            return null;
+        IXplatAbstractions.INSTANCE.askForRecipes();
+        var recipe = ClientRecipes.getRecipeById(ResourceKey.create(Registries.RECIPE, id));
+        assert recipe != null;
+        if (recipe.value().getType() == type) {
+            return (T) recipe.value();
         } else {
-            var manager = Minecraft.getInstance().level.getRecipeManager();
-
-            return (T) manager.byKey(id)
-                .map(RecipeHolder::value)
-                .filter((recipe) -> recipe.getType() == type).orElse(null);
+            return null;
         }
     }
 
@@ -42,18 +50,24 @@ public class PatchouliUtils {
      * @param longestIngredientSize Longest ingredient in the entire recipe
      * @return Serialized Patchouli ingredient string
      */
-    public static IVariable interweaveIngredients(List<Ingredient> ingredients, int longestIngredientSize, HolderLookup.RegistryLookup.Provider registries) {
+    public static IVariable interweaveIngredients(List<Optional<Ingredient>> ingredients, int longestIngredientSize, HolderLookup.RegistryLookup.Provider registries) {
         if (ingredients.size() == 1) {
-            return IVariable.wrapList(Arrays.stream(ingredients.get(0).getItems())
+//            return IVariable.wrapList(Arrays.stream(ingredients.get(0).getItems())
+//                    .map(v -> IVariable.from(v, registries))
+//                    .collect(Collectors.toList()), registries);
+            if (ingredients.getFirst().isPresent()) {
+                return IVariable.wrapList(Arrays.stream(ingredients.getFirst().get().items().toArray())
                     .map(v -> IVariable.from(v, registries))
                     .collect(Collectors.toList()), registries);
+            }
+            return IVariable.empty();
         }
 
         ItemStack[] empty = {ItemStack.EMPTY};
         List<ItemStack[]> stacks = new ArrayList<>();
-        for (Ingredient ingredient : ingredients) {
-            if (ingredient != null && !ingredient.isEmpty()) {
-                stacks.add(ingredient.getItems());
+        for (Optional<Ingredient> ingredient : ingredients) {
+            if (ingredient.isPresent()) {
+                stacks.add(ingredient.get().items().map(ItemStack::new).toArray(ItemStack[]::new));
             } else {
                 stacks.add(empty);
             }
@@ -70,9 +84,9 @@ public class PatchouliUtils {
     /**
      * Overload of the method above that uses the provided list's longest ingredient size.
      */
-    public static IVariable interweaveIngredients(List<Ingredient> ingredients, HolderLookup.RegistryLookup.Provider registries) {
+    public static IVariable interweaveIngredients(List<Optional<Ingredient>> ingredients, HolderLookup.RegistryLookup.Provider registries) {
         return interweaveIngredients(ingredients,
-            ingredients.stream().mapToInt(ingr -> ingr.getItems().length).max().orElse(1), registries
+            ingredients.stream().mapToInt(ingr -> ingr.isPresent() ? ingr.get().items().toArray().length : 0).max().orElse(1), registries
         );
     }
 }

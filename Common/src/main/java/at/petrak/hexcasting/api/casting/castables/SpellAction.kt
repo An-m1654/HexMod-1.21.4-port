@@ -49,7 +49,7 @@ interface SpellAction : Action {
 
         val sideEffects = mutableListOf<OperatorSideEffect>()
 
-        if (env.extractMedia(result.cost, true) > 0)
+        if (env.extractMedia(env.world, result.cost, true) > 0)
             throw MishapNotEnoughMedia(result.cost)
         if (result.cost > 0)
             sideEffects.add(OperatorSideEffect.ConsumeMedia(result.cost))

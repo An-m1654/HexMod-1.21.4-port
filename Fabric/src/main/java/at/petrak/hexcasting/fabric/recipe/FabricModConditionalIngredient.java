@@ -6,16 +6,17 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 import static at.petrak.hexcasting.api.HexAPI.modLoc;
 
@@ -43,7 +44,7 @@ public class FabricModConditionalIngredient extends Ingredient implements Custom
     );
 
     protected FabricModConditionalIngredient(Ingredient main, String modid, Ingredient ifModLoaded) {
-        super(Arrays.stream((IXplatAbstractions.INSTANCE.isModPresent(modid) ? ifModLoaded : main).values));
+        super((IXplatAbstractions.INSTANCE.isModPresent(modid) ? ifModLoaded : main).values);
         this.main = main;
         this.modid = modid;
         this.ifModLoaded = ifModLoaded;
@@ -62,10 +63,9 @@ public class FabricModConditionalIngredient extends Ingredient implements Custom
     }
 
     @Override
-    public List<ItemStack> getMatchingStacks() {
-        return List.of();
+    public Stream<Holder<Item>> getMatchingItems() {
+        return Stream.empty();
     }
-
     @Override
     public boolean requiresTesting() {
         return false;
@@ -101,7 +101,7 @@ public class FabricModConditionalIngredient extends Ingredient implements Custom
         }
 
         @Override
-        public MapCodec<?> getCodec(boolean b) {
+        public MapCodec getCodec() {
             return CODEC;
         }
 

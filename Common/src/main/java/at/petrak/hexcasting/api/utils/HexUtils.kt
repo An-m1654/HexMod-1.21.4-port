@@ -298,7 +298,7 @@ fun <T : Tag> Tag.downcast(type: TagType<T>): T {
 
 const val ERROR_COLOR = 0xff_f800f8.toInt()
 fun <T> isOfTag(registry: Registry<T>, key: ResourceKey<T>, tag: TagKey<T>): Boolean {
-    val maybeHolder = registry.getHolder(key)
+    val maybeHolder = registry.get(key)
     val holder = if (maybeHolder.isPresent) maybeHolder.get() else return false
     return holder.`is`(tag)
 }

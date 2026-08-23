@@ -10,9 +10,12 @@ import at.petrak.hexcasting.common.lib.HexItems;
 import at.petrak.paucal.api.datagen.PaucalAdvancementSubProvider;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -37,6 +40,7 @@ public class HexAdvancements extends PaucalAdvancementSubProvider {
 
     @Override
     public void generate(HolderLookup.Provider provider, Consumer<AdvancementHolder> consumer) {
+        HolderGetter<Item> items = provider.lookupOrThrow(Registries.ITEM);
         var root = Advancement.Builder.advancement()
             // what an ergonomic design decision
             // i am so happy that data generators are the future
@@ -47,7 +51,7 @@ public class HexAdvancements extends PaucalAdvancementSubProvider {
                 AdvancementType.TASK, true, true, true))
             // the only thing making this vaguely tolerable is the knowledge the json files are worse somehow
             .addCriterion("has_charged_amethyst", InventoryChangeTrigger.TriggerInstance.hasItems(
-                ItemPredicate.Builder.item().of(HexTags.Items.GRANTS_ROOT_ADVANCEMENT).build()))
+                ItemPredicate.Builder.item().of(items, HexTags.Items.GRANTS_ROOT_ADVANCEMENT).build()))
             .save(consumer, prefix("root")); // how the hell does one even read this
 
         //Creative Debug Unlocker
@@ -59,7 +63,7 @@ public class HexAdvancements extends PaucalAdvancementSubProvider {
                     AdvancementType.TASK, true, false, true))
             .parent(root)
             .addCriterion("has_creative_unlocker", InventoryChangeTrigger.TriggerInstance.hasItems(
-                ItemPredicate.Builder.item().of(HexItems.CREATIVE_UNLOCKER).build()))
+                ItemPredicate.Builder.item().of(items, HexItems.CREATIVE_UNLOCKER).build()))
             .save(consumer, prefix("creative_unlocker"));
 
         // weird names so we have alphabetical parity
@@ -120,7 +124,7 @@ public class HexAdvancements extends PaucalAdvancementSubProvider {
             .display(simpleDisplayWithBackground(HexBlocks.AKASHIC_LIGATURE, "lore", AdvancementType.GOAL,
                 modLoc("textures/block/slate_block.png")))
             .addCriterion("used_item", new Criterion<>(CriteriaTriggers.CONSUME_ITEM, new ConsumeItemTrigger.TriggerInstance(Optional.empty(),
-                    Optional.of(ItemPredicate.Builder.item().of(HexItems.LORE_FRAGMENT).build()))))
+                    Optional.of(ItemPredicate.Builder.item().of(items, HexItems.LORE_FRAGMENT).build()))))
             .save(consumer, prefix("lore"));
 
         for (var advId : ItemLoreFragment.NAMES) {
