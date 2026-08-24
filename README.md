@@ -6,9 +6,9 @@ This is the actual Hex Casting mod that is port to 1.21.4
 As I not only ported Hex Casting itself but also the dependencies of Hex Casting, there are a lot more files in the libs folder. All of them are dependencies of Hex Casting which is required to compile the mod.
 
 Source code for all these ports can be found in my account. Notably:
-[Inline](https://github.com/An-m1654/inline-1.21.4-port)
-[Patchouli](https://github.com/An-m1654/Patchouli-1.21.4-port)
-[PAUCAL](https://github.com/An-m1654/PAUCAL-1.21.4-port)
+- [Inline](https://github.com/An-m1654/inline-1.21.4-port)
+- [Patchouli](https://github.com/An-m1654/Patchouli-1.21.4-port)
+- [PAUCAL](https://github.com/An-m1654/PAUCAL-1.21.4-port)
 
 The trinket jar is just a build of [this commit](https://github.com/emilyploszaj/trinkets/commit/49ae1f1002f5ea6cf16481b9803a21175d036a62) of the actual source code of trinket.
 
