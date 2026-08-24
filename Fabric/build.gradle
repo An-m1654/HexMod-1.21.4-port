@@ -218,7 +218,10 @@ jar.finalizedBy(remapJar)
 
 publishing {
     publications {
-        hexmod(MavenPublication) {
+        gpr(MavenPublication) {
+            groupId = "at.petra-k.$modID"
+            artifactId = "$modID-$platform-$minecraftVersion"
+            version = modVersion
             from components.java
         }
     }
