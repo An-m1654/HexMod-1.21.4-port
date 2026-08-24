@@ -22,3 +22,4 @@ accessible method net/minecraft/network/protocol/game/ClientboundAddEntityPacket
 accessible method net/minecraft/network/protocol/game/ClientboundAddEntityPacket write (Lnet/minecraft/network/RegistryFriendlyByteBuf;)V
 accessible method net/minecraft/world/level/block/state/properties/BlockSetType register (Lnet/minecraft/world/level/block/state/properties/BlockSetType;)Lnet/minecraft/world/level/block/state/properties/BlockSetType;
 accessible field net/minecraft/client/MouseHandler scrollWheelHandler Lnet/minecraft/client/ScrollWheelHandler;
+accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
