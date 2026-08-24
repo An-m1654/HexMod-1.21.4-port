@@ -27,7 +27,7 @@ public class CCStaffcastImage implements Component {
     public CastingVM getVM(InteractionHand hand) {
         var img = this.lazyLoadedTag.isEmpty()
             ? new CastingImage()
-            : CastingImage.getCODEC().parse(NbtOps.INSTANCE, lazyLoadedTag).getOrThrow();
+            : CastingImage.getCODEC().parse(owner.registryAccess().createSerializationContext(NbtOps.INSTANCE), lazyLoadedTag).getOrThrow();
         var env = new StaffCastEnv(this.owner, hand);
         return new CastingVM(img, env);
     }
@@ -36,7 +36,7 @@ public class CCStaffcastImage implements Component {
         this.lazyLoadedTag =
             image == null
                 ? new CompoundTag()
-                : (CompoundTag) CastingImage.getCODEC().encode(image, NbtOps.INSTANCE, new CompoundTag()).getOrThrow();
+                : (CompoundTag) CastingImage.getCODEC().encode(image, owner.registryAccess().createSerializationContext(NbtOps.INSTANCE), new CompoundTag()).getOrThrow();
     }
 
     @Override
