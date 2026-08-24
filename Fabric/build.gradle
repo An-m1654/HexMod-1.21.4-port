@@ -215,3 +215,21 @@ tasks.named('sourcesJar') {
 }
 
 jar.finalizedBy(remapJar)
+
+publishing {
+    publications {
+        hexmod(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/An-m1654/HexMod-1.21.4-port")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
