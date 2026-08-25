@@ -113,6 +113,8 @@ repositories {
 //    maven { url = "https://jitpack.io" }
     // accessories
 
+    maven { url = "https://an-m1654.github.io/maven/" }
+
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
     flatDir {
         dir 'libs'
@@ -132,7 +134,7 @@ dependencies {
     modImplementation("libs:paucal:$paucalVersion+$minecraftVersion-fabric")
     // dear mod devs, don't put the platform in the middle of your version code
     modImplementation "libs:Patchouli:1.21.4-$patchouliVersion-FABRIC-SNAPSHOT-dev"
-    modImplementation "libs:inline-fabric:$minecraftVersion-$inlineVersion"
+    modImplementation "com.samsthenerd.inline:inline-fabric:$minecraftVersion-$inlineVersion"
     modImplementation "libs:trinkets:${trinketsVersion}"
 
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:$cardinalComponentsVersion"

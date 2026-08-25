@@ -32,6 +32,8 @@ repositories {
 
     // EMI
     maven { url = "https://maven.terraformersmc.com/releases/" }
+
+    maven { url = "https://an-m1654.github.io/maven/" }
 }
 
 dependencies {
@@ -44,7 +46,7 @@ dependencies {
     modCompileOnly "libs:paucal:$paucalVersion+$minecraftVersion-common"
     // i do not know why the xplat and mod jars are in different coordinates
     modCompileOnly "libs:Patchouli-xplat:1.21.4-$patchouliVersion-SNAPSHOT-dev"
-    modCompileOnly "libs:inline-common:1.21.4-1.2.2"
+    modCompileOnly "com.samsthenerd.inline:inline-common:1.21.4-1.2.2"
     modRuntimeOnly "me.zeroeightsix:fiber:${project.fiber_version}"
 
     // === OPTIONAL DEPS ===
