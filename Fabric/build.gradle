@@ -218,7 +218,7 @@ jar.finalizedBy(remapJar)
 
 publishing {
     publications {
-        gpr(MavenPublication) {
+        hexCasting(MavenPublication) {
             groupId = "at.petra-k.$modID"
             artifactId = "$modID-$platform-$minecraftVersion"
             version = modVersion
@@ -227,12 +227,7 @@ publishing {
     }
     repositories {
         maven {
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/An-m1654/HexMod-1.21.4-port")
-            credentials {
-                username = System.getenv("GITHUB_USERNAME")
-                password = System.getenv("GITHUB_TOKEN")
-            }
+            url = System.getenv("LOCAL_REPO_URL")
         }
     }
 }
