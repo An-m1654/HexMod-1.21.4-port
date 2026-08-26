@@ -37,6 +37,7 @@ repositories {
 }
 
 dependencies {
+    mappings loom.officialMojangMappings()
     // === MANDATORY DEPS ===
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
     // which get remapped to the correct annotations on each platform.
@@ -45,7 +46,7 @@ dependencies {
 
     modCompileOnly "libs:paucal:$paucalVersion+$minecraftVersion-common"
     // i do not know why the xplat and mod jars are in different coordinates
-    modCompileOnly "libs:Patchouli-xplat:1.21.4-$patchouliVersion-SNAPSHOT-dev"
+    modCompileOnly "vazkii.patchouli:Patchouli-xplat:1.21.4-$patchouliVersion:dev"
     modCompileOnly "com.samsthenerd.inline:inline-common:1.21.4-1.2.2"
     modRuntimeOnly "me.zeroeightsix:fiber:${project.fiber_version}"
 

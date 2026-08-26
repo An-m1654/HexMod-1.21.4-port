@@ -133,7 +133,7 @@ dependencies {
     // === MANDATORY DEPS ===
     modImplementation("libs:paucal:$paucalVersion+$minecraftVersion-fabric")
     // dear mod devs, don't put the platform in the middle of your version code
-    modImplementation "libs:Patchouli:1.21.4-$patchouliVersion-FABRIC-SNAPSHOT-dev"
+    modImplementation "vazkii.patchouli:Patchouli:1.21.4-$patchouliVersion-FABRIC"
     modImplementation "com.samsthenerd.inline:inline-fabric:$minecraftVersion-$inlineVersion"
     modImplementation "libs:trinkets:${trinketsVersion}"
 
