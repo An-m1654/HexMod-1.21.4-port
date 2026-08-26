@@ -133,9 +133,6 @@ subprojects {
             }
         }
     }
-    tasks.named("shadowJar") {
-        enabled = false
-    }
 }
 
 allprojects {

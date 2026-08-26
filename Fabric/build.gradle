@@ -221,9 +221,9 @@ jar.finalizedBy(remapJar)
 publishing {
     publications {
         hexCasting(MavenPublication) {
-            groupId = "at.petra-k.$modID"
-            artifactId = "$modID-$platform-$minecraftVersion"
-            version = modVersion
+            groupId = group
+            artifactId = base.archivesName.get()
+            version = version
             from components.java
         }
     }
