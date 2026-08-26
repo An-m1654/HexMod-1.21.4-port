@@ -204,10 +204,10 @@ shadowJar {
     zip64 = true
 }
 
-remapJar {
-    inputFile.set shadowJar.archiveFile
-    dependsOn shadowJar
-}
+//remapJar {
+//    inputFile.set shadowJar.archiveFile
+//    dependsOn shadowJar
+//}
 
 tasks.named('processResources') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
