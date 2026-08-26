@@ -155,7 +155,7 @@ dependencies {
 //    modLocalRuntime "dev.emi:emi-fabric:${emiVersion}"
 
     modLocalRuntime "dev.architectury:architectury-fabric:$architecturyVersion"
-    modLocalRuntime "libs:inline-fabric:$minecraftVersion-$inlineVersion"
+    modLocalRuntime "com.samsthenerd.inline:inline-fabric:$minecraftVersion-$inlineVersion"
 
 //    modImplementation "maven.modrinth:gravity-api:$gravityApiVersion"
 //    modApi("com.github.Virtuoel:Pehkui:${pehkuiVersion}", {
